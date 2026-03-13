@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Projects</title>
+
+	<link rel="stylesheet" href="../../css/dashboard.css">
+	<link rel="stylesheet" href="../../css/projects.css">
+
+</head>
+
+<body>
+
+	<div class="layout">
+
+		<div id="sidebar"></div>
+
+		<div class="main">
+
+			<div id="header"></div>
+
+			<main class="workspace">
+
+				<div class="projects-header">
+
+					<h1>
+						Projects
+					</h1>
+
+					<div class="projects-actions">
+
+						<button id="openProjectModal" class="create-project">
+							+ Create Project
+						</button>
+
+						<button id="viewArchive" class="archive-btn">
+							View Archive
+						</button>
+
+					</div>
+
+				</div>
+
+
+				<table class="projects-table">
+
+					<thead>
+
+						<tr>
+							<th>Name</th>
+							<th>Client</th>
+							<th>Manager</th>
+							<th>Status</th>
+							<th>Start</th>
+							<th>End</th>
+						</tr>
+
+					</thead>
+
+					<tbody>
+
+						<tr>
+							<td>CRM System</td>
+							<td>Acme Corp</td>
+							<td>Alex Lesnik</td>
+							<td>In Progress</td>
+							<td>01.03.2026</td>
+							<td>30.05.2026</td>
+						</tr>
+
+						<tr>
+							<td>Mobile App</td>
+							<td>Tech Ltd</td>
+							<td>Ivan Petrov</td>
+							<td>Planning</td>
+							<td>10.04.2026</td>
+							<td>20.07.2026</td>
+						</tr>
+
+					</tbody>
+
+				</table>
+
+			</main>
+
+		</div>
+
+	</div>
+
+<div class="modal" id="projectModal">
+
+	<div class="modal-content">
+
+		<h2>Create Project</h2>
+
+		<div class="form-group">
+
+			<label>Project name *</label>
+
+			<input
+				type="text"
+				id="projectName"
+				placeholder="Project name"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Client *</label>
+
+			<div class="client-select">
+
+				<select id="projectClient"></select>
+
+				<button
+					id="createClientFromProject"
+					class="small-btn"
+				>
+					+
+				</button>
+
+			</div>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Manager *</label>
+
+			<select id="projectManager">
+
+				<option value="1">
+					Alex Lesnik
+				</option>
+
+				<option value="2">
+					Ivan Petrov
+				</option>
+
+			</select>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Start date *</label>
+
+			<input
+				type="date"
+				id="projectStart"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>End date</label>
+
+			<input
+				type="date"
+				id="projectEnd"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Status</label>
+
+		<div class="dropdown" id="statusDropdown">
+
+			<div class="dropdown-selected">
+
+				Initiation
+
+				<span class="dropdown-arrow">▼</span>
+
+			</div>
+
+			<div class="dropdown-menu">
+
+				<div class="dropdown-item" data-value="initiation">
+					Initiation
+				</div>
+
+				<div class="dropdown-item" data-value="planning">
+					Planning
+				</div>
+
+				<div class="dropdown-item" data-value="active">
+					Active
+				</div>
+
+				<div class="dropdown-item" data-value="completed">
+					Completed
+				</div>
+
+			</div>
+
+		</div>
+
+
+
+		</div>
+
+		<div class="form-error" id="projectError"></div>
+
+		<div class="modal-actions">
+
+			<button id="createProjectBtn">
+				Create Project
+			</button>
+
+			<button id="closeProjectModal">
+				Cancel
+			</button>
+
+		</div>
+
+	</div>
+
+</div>
+
+<div class="modal" id="clientModal">
+
+	<div class="modal-content">
+
+		<h2>Create Client</h2>
+
+		<div class="form-group">
+
+			<label>Company name *</label>
+
+			<input
+				type="text"
+				id="clientName"
+				placeholder="Company name"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>INN *</label>
+
+			<input
+				type="text"
+				id="clientInn"
+				placeholder="10 or 12 digits"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Email</label>
+
+			<input
+				type="email"
+				id="clientEmail"
+				placeholder="example@mail.com"
+			>
+
+		</div>
+
+		<div class="form-group">
+
+			<label>Phone</label>
+
+			<input
+				type="text"
+				id="clientPhone"
+				placeholder="+7..."
+			>
+
+		</div>
+
+		<div class="form-error" id="clientError"></div>
+
+		<div class="modal-actions">
+
+			<button id="createClientBtn">
+				Create
+			</button>
+
+			<button id="closeClientModal">
+				Cancel
+			</button>
+
+		</div>
+
+	</div>
+
+</div>
+
+<script src="../../js/layout.js"></script>
+<script src="../../js/clients.js"></script>
+<script src="../../js/projects.js"></script>
+</body>
+
+</html>

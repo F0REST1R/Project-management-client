@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src="https://unpkg.com/lucide@latest"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Project</title>
+
+	<link rel="stylesheet" href="../../css/dashboard.css">
+	<link rel="stylesheet" href="../../css/project.css">
+
+</head>
+
+<body>
+
+	<div class="layout">
+
+		<!-- SIDEBAR (layout component) -->
+
+		<div id="sidebar"></div>
+
+		<!-- MAIN -->
+
+		<div class="main">
+
+			<!-- HEADER (layout component) -->
+
+			<div id="header"></div>
+
+			<!-- WORKSPACE -->
+
+			<main class="workspace">
+
+				<div class="project-header">
+
+					<h1>
+						CRM System
+					</h1>
+
+					<div class="project-info">
+
+						<span>
+							Client: Acme Corp
+						</span>
+
+						<span>
+							Status: In Progress
+						</span>
+
+						<span>
+							Manager: Alex Lesnik
+						</span>
+
+					</div>
+
+					<button
+						class="create-task"
+						id="openTaskModal"
+					>
+						Create Task
+					</button>
+
+				</div>
+
+				<!-- PROJECT TABS -->
+
+				<div class="project-tabs">
+
+					<button class="tab tab--active">
+						Overview
+					</button>
+
+					<button class="tab">
+						Tasks
+					</button>
+
+					<button class="tab">
+						Team
+					</button>
+
+					<button class="tab">
+						Budget
+					</button>
+
+					<button class="tab">
+						Documents
+					</button>
+
+				</div>
+
+				<!-- PROJECT CONTENT -->
+
+				<div class="project-content">
+
+					<div class="kanban">
+
+						<!-- COLUMN NEW -->
+
+						<div class="kanban-column">
+
+							<h3>
+								New
+							</h3>
+
+							<div
+								class="kanban-tasks"
+								data-status="new"
+							>
+
+								<div
+									class="task-card"
+									draggable="true"
+								>
+									Design login page
+								</div>
+
+								<div
+									class="task-card"
+									draggable="true"
+								>
+									Create API structure
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- COLUMN IN PROGRESS -->
+
+						<div class="kanban-column">
+
+							<h3>
+								In Progress
+							</h3>
+
+							<div
+								class="kanban-tasks"
+								data-status="progress"
+							>
+
+								<div
+									class="task-card"
+									draggable="true"
+								>
+									Implement database
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- COLUMN REVIEW -->
+
+						<div class="kanban-column">
+
+							<h3>
+								Review
+							</h3>
+
+							<div
+								class="kanban-tasks"
+								data-status="review"
+							>
+
+								<div
+									class="task-card"
+									draggable="true"
+								>
+									Code review
+								</div>
+
+							</div>
+
+						</div>
+
+						<!-- COLUMN DONE -->
+
+						<div class="kanban-column">
+
+							<h3>
+								Done
+							</h3>
+
+							<div
+								class="kanban-tasks"
+								data-status="done"
+							>
+
+								<div
+									class="task-card"
+									draggable="true"
+								>
+									Project structure
+								</div>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</main>
+
+		</div>
+
+	</div>
+
+	<!-- CREATE TASK MODAL -->
+
+	<div
+		class="modal"
+		id="taskModal"
+	>
+
+		<div class="modal-content">
+
+			<h2>
+				Create Task
+			</h2>
+
+			<input
+				type="text"
+				id="taskTitle"
+				placeholder="Task title"
+			>
+
+			<select id="taskStatus">
+
+				<option value="new">
+					New
+				</option>
+
+				<option value="progress">
+					In Progress
+				</option>
+
+				<option value="review">
+					Review
+				</option>
+
+				<option value="done">
+					Done
+				</option>
+
+			</select>
+
+			<div class="modal-actions">
+
+				<button id="createTaskBtn">
+					Create
+				</button>
+
+				<button id="closeTaskModal">
+					Cancel
+				</button>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- SCRIPTS -->
+
+	<script src="../../js/layout.js"></script>
+	<script src="../../js/kanban.js"></script>
+	<script src="../../js/tasks.js"></script>
+
+</body>
+
+</html>

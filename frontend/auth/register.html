@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="UTF-8">
+	<meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<title>Project Manager | Auth</title>
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+	<link rel="stylesheet" href="../css/auth.css">
+
+</head>
+
+<body>
+
+	<div class="auth">
+
+		<div class="auth__left">
+
+			<div class="auth__content">
+
+				<h1 class="auth__title">
+					Get Started with Us
+				</h1>
+
+				<p class="auth__subtitle">
+					Trust your workflow management to us
+				</p>
+
+				<div class="carousel">
+
+                    <div class="carousel__track">
+
+                        <div class="card">Fast project management</div>
+                        <div class="card">Real-time task tracking</div>
+                        <div class="card card--active">Built for small teams</div>
+                        <div class="card">Secure cloud storage</div>
+                        <div class="card">Simple and powerful interface</div>
+
+                    </div>
+
+                    <div class="carousel__progress">
+                        <div class="carousel__bar"></div>
+                    </div>
+
+                </div>
+
+			</div>
+
+		</div>
+
+		<div class="auth__right">
+
+            <div class="auth__form">
+
+                <div class="auth__tabs">
+
+                    <button class="tab tab--active" id="signupTab">
+                        Sign Up
+                    </button>
+
+                    <button class="tab" id="loginTab">
+                        Log In
+                    </button>
+
+                </div>
+
+                <h2 class="auth__form-title" id="formTitle">
+                    Create your account
+                </h2>
+
+                <!-- SIGN UP -->
+
+                <div class="auth__inputs" id="signupForm">
+
+                    <div class="auth__row">
+
+                        <input type="text" id="firstName" placeholder="First Name">
+                        <input type="text" id="lastName" placeholder="Last Name">
+
+                    </div>
+
+                    <input type="email" id="signupEmail" placeholder="Email">
+
+                    <div class="password-field">
+                        <input type="password" id="signupPassword" placeholder="Password">
+                        <span class="toggle-password" data-target="signupPassword">👁</span>
+                    </div>
+
+                    <div class="password-field">
+                        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+                        <span class="toggle-password" data-target="confirmPassword">👁</span>
+                    </div>
+
+                </div>
+
+                <!-- LOGIN -->
+
+                <div class="auth__inputs" id="loginForm" style="display:none">
+
+                    <input type="email" id="loginEmail" placeholder="Email">
+
+                    <div class="password-field">
+                        <input type="password" id="loginPassword" placeholder="Password">
+                        <span class="toggle-password" data-target="loginPassword">👁</span>
+                    </div>
+
+                </div>
+
+                <div class="form-error" id="formError"></div>
+
+                <button class="btn-primary" id="submitBtn">
+                    Create Account
+                </button>
+
+                <p class="auth__switch" id="switchText">
+                    Already have an account? <span id="switchLink">Log in</span>
+                </p>
+
+            </div>
+
+		</div>
+
+	</div>
+
+	<script src="../js/auth.js"></script>
+
+</body>
+
+</html>
