@@ -1,0 +1,60 @@
+services:
+  # Создаем контейнер
+  postgres:
+    image: postgres:15
+    #Название контейнера
+    container_name: DB_for_site
+    env_file:
+      - .env
+    #Необходимые данные для подключения
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DBNAME}
+    #Указываем где будет хранится информация
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      #Указываем какие SQL команды должны выполнить при запуске контейнера (все что находится в migrations)
+      - ./migrations:/docker-entrypoint-initdb.d
+    # Перезапускаем если контейнер падает
+    restart: unless-stopped
+    # Проверяет живой ли контейнер
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d project_management_client"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: project_redis
+    restart: unless-stopped
+
+  app:
+    # Указываем откуда брать DockerFile 
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    container_name: project_backend
+    env_file:
+      - .env
+    # Перебрасываем порт, чтобы потом могли подключится к нему
+    ports: 
+    - "8080:8080"
+    # Указываем от чего зависит, если что-то из этого не запустилось мы не запускаем наш app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", http://localhost:8080/health]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      
+volumes:
+  postgres_data:
+    

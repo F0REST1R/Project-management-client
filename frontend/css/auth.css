@@ -399,3 +399,69 @@ body {
 	cursor: pointer;
 
 }
+
+.role-select{
+
+	margin-top:10px;
+
+}
+
+.role-label{
+
+	display:block;
+
+	margin-bottom:6px;
+
+	font-size:14px;
+
+	opacity:0.8;
+
+}
+
+.role-options{
+
+	display:flex;
+
+	gap:8px;
+
+}
+
+.role-card{
+
+	flex:1;
+
+	background:#111;
+
+	border:1px solid #333;
+
+	border-radius:8px;
+
+	padding:10px;
+
+	text-align:center;
+
+	cursor:pointer;
+
+	transition:0.2s;
+
+}
+
+.role-card input{
+
+	display:none;
+
+}
+
+.role-card:hover{
+
+	border:1px solid #28623A;
+
+}
+
+.role-card input:checked + span{
+
+	color:#3cb371;
+
+	font-weight:600;
+
+}

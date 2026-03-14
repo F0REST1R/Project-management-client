@@ -204,5 +204,18 @@ document
 		}
 
 	}
+	
+	const role =
+	document.querySelector(
+	'input[name="role"]:checked'
+	)?.value
 
+	if(!role){
+
+		error.innerText =
+		"Please select a role"
+
+		return
+	}
 })
+
