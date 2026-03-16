@@ -55,112 +55,112 @@
 		<div class="auth__right">
 
             <div class="auth__form">
+                <form id="authForm">
+                    <div class="auth__tabs">
 
-                <div class="auth__tabs">
+                        <button type="button" class="tab tab--active" id="signupTab">
+                            Sign Up
+                        </button>
 
-                    <button class="tab tab--active" id="signupTab">
-                        Sign Up
-                    </button>
-
-                    <button class="tab" id="loginTab">
-                        Log In
-                    </button>
-
-                </div>
-
-                <h2 class="auth__form-title" id="formTitle">
-                    Create your account
-                </h2>
-
-                <!-- SIGN UP -->
-
-                <div class="auth__inputs" id="signupForm">
-
-                    <div class="auth__row">
-
-                        <input type="text" id="firstName" placeholder="First Name">
-                        <input type="text" id="lastName" placeholder="Last Name">
+                        <button type="button" class="tab" id="loginTab">
+                            Log In
+                        </button>
 
                     </div>
 
-                    <input type="email" id="signupEmail" placeholder="Email">
+                    <h2 class="auth__form-title" id="formTitle">
+                        Create your account
+                    </h2>
 
-                    <div class="password-field">
-                        <input type="password" id="signupPassword" placeholder="Password">
-                        <span class="toggle-password" data-target="signupPassword">👁</span>
-                    </div>
+                    <!-- SIGN UP -->
 
-                    <div class="password-field">
-                        <input type="password" id="confirmPassword" placeholder="Confirm Password">
-                        <span class="toggle-password" data-target="confirmPassword">👁</span>
-                    </div>
-                    <div class="role-select">
+                    <div class="auth__inputs" id="signupForm">
 
-                        <label class="role-label">
-                            Select role
-                        </label>
+                        <div class="auth__row">
 
-                        <div class="role-options">
+                            <input type="text" id="firstName" placeholder="First Name">
+                            <input type="text" id="lastName" placeholder="Last Name">
 
-                            <label class="role-card">
+                        </div>
 
-                                <input type="radio"
-                                name="role"
-                                value="manager">
+                        <input type="email" id="signupEmail" placeholder="Email">
 
-                                <span>Manager</span>
+                        <div class="password-field">
+                            <input type="password" id="signupPassword" placeholder="Password">
+                            <span class="toggle-password" data-target="signupPassword">👁</span>
+                        </div>
 
+                        <div class="password-field">
+                            <input type="password" id="confirmPassword" placeholder="Confirm Password">
+                            <span class="toggle-password" data-target="confirmPassword">👁</span>
+                        </div>
+                        <div class="role-select">
+
+                            <label class="role-label">
+                                Select role
                             </label>
 
-                            <label class="role-card">
+                            <div class="role-options">
 
-                                <input type="radio"
-                                name="role"
-                                value="employee">
+                                <label class="role-card">
 
-                                <span>Employee</span>
+                                    <input type="radio"
+                                    name="role"
+                                    value="manager">
 
-                            </label>
+                                    <span>Manager</span>
 
-                            <label class="role-card">
+                                </label>
 
-                                <input type="radio"
-                                name="role"
-                                value="client">
+                                <label class="role-card">
 
-                                <span>Client</span>
+                                    <input type="radio"
+                                    name="role"
+                                    value="employee">
 
-                            </label>
+                                    <span>Employee</span>
+
+                                </label>
+
+                                <label class="role-card">
+
+                                    <input type="radio"
+                                    name="role"
+                                    value="client">
+
+                                    <span>Client</span>
+
+                                </label>
+
+                            </div>
 
                         </div>
 
                     </div>
 
-                </div>
+                    <!-- LOGIN -->
 
-                <!-- LOGIN -->
+                    <div class="auth__inputs" id="loginForm" style="display:none">
 
-                <div class="auth__inputs" id="loginForm" style="display:none">
+                        <input type="email" id="loginEmail" placeholder="Email">
 
-                    <input type="email" id="loginEmail" placeholder="Email">
+                        <div class="password-field">
+                            <input type="password" id="loginPassword" placeholder="Password">
+                            <span class="toggle-password" data-target="loginPassword">👁</span>
+                        </div>
 
-                    <div class="password-field">
-                        <input type="password" id="loginPassword" placeholder="Password">
-                        <span class="toggle-password" data-target="loginPassword">👁</span>
                     </div>
 
-                </div>
+                    <div class="form-error" id="formError"></div>
 
-                <div class="form-error" id="formError"></div>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        Create Account
+                    </button>
 
-                <button class="btn-primary" id="submitBtn">
-                    Create Account
-                </button>
-
-                <p class="auth__switch" id="switchText">
-                    Already have an account? <span id="switchLink">Log in</span>
-                </p>
-
+                    <p class="auth__switch" id="switchText">
+                        Already have an account? <span id="switchLink">Log in</span>
+                    </p>
+                </form>
             </div>
 
 		</div>

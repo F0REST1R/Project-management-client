@@ -57,6 +57,8 @@ renderCards()
 
 setInterval(rotateCards,5000)
 
+const form = document.getElementById("authForm")
+
 const signupTab = document.getElementById("signupTab")
 const loginTab = document.getElementById("loginTab")
 
@@ -66,8 +68,7 @@ const loginForm = document.getElementById("loginForm")
 const formTitle = document.getElementById("formTitle")
 const submitBtn = document.getElementById("submitBtn")
 
-const switchText = document.getElementById("switchText")
-const switchLink = document.getElementById("switchLink")
+const formError = document.getElementById("formError")
 
 function showSignup(){
 
@@ -80,11 +81,6 @@ function showSignup(){
 	formTitle.innerText = "Create your account"
 
 	submitBtn.innerText = "Create Account"
-
-	switchText.innerHTML =
-	'Already have an account? <span id="switchLink">Log in</span>'
-
-	addSwitchListener()
 
 }
 
@@ -100,29 +96,11 @@ function showLogin(){
 
 	submitBtn.innerText = "Log In"
 
-	switchText.innerHTML =
-	'Don’t have an account? <span id="switchLink">Sign up</span>'
-
-	addSwitchListener()
-
 }
 
 signupTab.onclick = showSignup
 loginTab.onclick = showLogin
 
-function addSwitchListener(){
-
-	const link = document.getElementById("switchLink")
-
-	if(link.innerText === "Log in"){
-		link.onclick = showLogin
-	}else{
-		link.onclick = showSignup
-	}
-
-}
-
-addSwitchListener()
 
 function isValidEmail(email){
 
@@ -133,14 +111,20 @@ function isValidEmail(email){
 
 }
 
-const formError =
-document.getElementById("formError")
 
-submitBtn.onclick = () => {
+form.addEventListener("submit", async (event)=>{
+
+	event.preventDefault()
 
 	formError.innerText = ""
 
 	if(signupForm.style.display !== "none"){
+
+		const firstName =
+		document.getElementById("firstName").value
+
+		const lastName =
+		document.getElementById("lastName").value
 
 		const email =
 		document.getElementById("signupEmail").value
@@ -151,8 +135,15 @@ submitBtn.onclick = () => {
 		const confirm =
 		document.getElementById("confirmPassword").value
 
+		const role =
+		document.querySelector(
+			'input[name="role"]:checked'
+		)?.value
+
+
 		if(!isValidEmail(email)){
-			formError.innerText = "Invalid email address"
+			formError.innerText =
+			"Invalid email address"
 			return
 		}
 
@@ -168,54 +159,118 @@ submitBtn.onclick = () => {
 			return
 		}
 
-		alert("Account created!")
+		if(!role){
+			formError.innerText =
+			"Please select a role"
+			return
+		}
+
+
+		try{
+
+			const response =
+			await fetch(
+				"http://localhost:8080/api/auth/register",
+				{
+					method: "POST",
+
+					headers:{
+						"Content-Type":
+						"application/json"
+					},
+
+					body: JSON.stringify({
+
+						first_name: firstName,
+						last_name: lastName,
+						email: email,
+						password: password,
+						role: role
+
+					})
+
+				}
+			)
+
+			if(response.status === 201){
+
+				alert("Account created")
+
+				showLogin()
+
+			}else{
+
+				const error =
+				await response.text()
+
+				formError.innerText = error
+
+			}
+
+		}catch(err){
+
+			formError.innerText =
+			"Server connection error"
+
+		}
 
 	}else{
 
 		const email =
 		document.getElementById("loginEmail").value
 
-		if(!isValidEmail(email)){
-			formError.innerText = "Invalid email address"
-			return
+		const password =
+		document.getElementById("loginPassword").value
+
+		try{
+
+			const response =
+			await fetch(
+				"http://localhost:8080/api/auth/login",
+				{
+					method:"POST",
+
+					headers:{
+						"Content-Type":
+						"application/json"
+					},
+
+					body: JSON.stringify({
+
+						email: email,
+						password: password
+
+					})
+
+				}
+			)
+
+			if(!response.ok){
+
+				formError.innerText =
+				"Invalid credentials"
+
+				return
+			}
+
+			const data =
+			await response.json()
+
+			localStorage.setItem(
+				"token",
+				data.token
+			)
+
+			window.location.href =
+			"../pages/dashboard/index.html"
+
+		}catch(err){
+
+			formError.innerText =
+			"Server connection error"
+
 		}
 
-		alert("Login successful")
-
 	}
 
-}
-
-document
-.querySelectorAll(".toggle-password")
-.forEach(icon => {
-
-	icon.onclick = () => {
-
-		const input =
-		document.getElementById(
-			icon.dataset.target
-		)
-
-		if(input.type === "password"){
-			input.type = "text"
-		}else{
-			input.type = "password"
-		}
-
-	}
-	
-	const role =
-	document.querySelector(
-	'input[name="role"]:checked'
-	)?.value
-
-	if(!role){
-
-		error.innerText =
-		"Please select a role"
-
-		return
-	}
 })
-

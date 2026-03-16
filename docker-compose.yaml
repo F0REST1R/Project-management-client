@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     # Проверяет живой ли контейнер
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d project_management_client"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DBNAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
