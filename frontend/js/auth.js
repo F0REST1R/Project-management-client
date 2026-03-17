@@ -84,6 +84,15 @@ function showSignup(){
 
 }
 
+function saveUserData(userData) {
+    localStorage.setItem('userData', JSON.stringify({
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        role: userData.role,
+        email: userData.email
+    }));
+}
+
 function showLogin(){
 
 	loginTab.classList.add("tab--active")
@@ -245,24 +254,22 @@ form.addEventListener("submit", async (event)=>{
 				}
 			)
 
-			if(!response.ok){
-
-				formError.innerText =
-				"Invalid credentials"
-
+			if (!response.ok) {
+				formError.innerText = "Invalid credentials";
 				return
 			}
 
-			const data =
-			await response.json()
+			const data = await response.json()
 
-			localStorage.setItem(
-				"token",
-				data.token
-			)
+			// Сохраняем токен
+			localStorage.setItem("token", data.token)
 
-			window.location.href =
-			"../pages/dashboard/index.html"
+			// Если сервер возвращает данные пользователя вместе с токеном
+			if (data.user) {
+				saveUserData(data.user);
+			}
+
+			window.location.href = "../pages/dashboard/index.html"
 
 		}catch(err){
 

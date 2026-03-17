@@ -92,3 +92,41 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 	})
 }
+
+func (h *AuthHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+    // Получаем токен из заголовка
+    authHeader := r.Header.Get("Authorization")
+    if authHeader == "" {
+        http.Error(w, "missing token", http.StatusUnauthorized)
+        return
+    }
+
+    // Убираем "Bearer " из токена
+    tokenString := authHeader[7:] // len("Bearer ") == 7
+
+    // Валидируем токен и получаем claims
+    claims, err := utils.ValidateJWT(tokenString, h.Config.JWTSecret)
+    if err != nil {
+        http.Error(w, "invalid token", http.StatusUnauthorized)
+        return
+    }
+
+    // Получаем пользователя из базы данных
+    user, err := h.Service.GetUserByID(claims.UserID)
+    if err != nil {
+        http.Error(w, "user not found", http.StatusNotFound)
+        return
+    }
+
+    // Отправляем данные пользователя (без пароля!)
+    response := map[string]interface{}{
+        "id":         user.ID,
+        "first_name": user.FirstName,
+        "last_name":  user.LastName,
+        "email":      user.Email,
+        "role":       user.Role,
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(response)
+}

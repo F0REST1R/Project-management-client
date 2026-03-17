@@ -74,3 +74,27 @@ func (s *AuthService) Login(email string, password string) (models.User, error) 
 
 	return user, nil
 }
+
+func (s *AuthService) GetUserByID(userID int) (*models.User, error) {
+    var user models.User
+
+    query := `
+    SELECT id, first_name, last_name, email, role
+    FROM users
+    WHERE id = $1
+    `
+
+    err := db.DB.QueryRow(query, userID).Scan(
+        &user.ID,
+        &user.FirstName,
+        &user.LastName,
+        &user.Email,
+        &user.Role,
+    )
+
+    if err != nil {
+        return nil, err
+    }
+
+    return &user, nil
+}

@@ -16,9 +16,10 @@ func main() {
 	authHandler := handlers.NewAuthHandler(cfg)
 
 	http.HandleFunc("/api/auth/register", cors(authHandler.Register))
-
 	http.HandleFunc("/api/auth/login", cors(authHandler.Login))
 
+	http.HandleFunc("/api/auth/me", cors(authHandler.GetCurrentUser))
+	
 	http.HandleFunc("/health", health)
 
 	
