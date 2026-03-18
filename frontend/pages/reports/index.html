@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reports - Project Management System</title>
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/reports.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <div id="sidebar"></div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <!-- HEADER -->
+            <div id="header"></div>
+
+            <!-- REPORTS WORKSPACE -->
+            <main class="reports-workspace">
+                <!-- Header с фильтрами -->
+                <div class="reports-header">
+                    <div class="reports-header__left">
+                        <h1 class="reports-title">Reports & Analytics</h1>
+                        <p class="reports-subtitle">Comprehensive overview of your project portfolio</p>
+                    </div>
+                    
+                    <div class="reports-filters">
+                        <div class="filter-group">
+                            <label>Period</label>
+                            <select id="periodSelect" class="filter-select">
+                                <option value="week">Last 7 days</option>
+                                <option value="month" selected>Last 30 days</option>
+                                <option value="quarter">Last 3 months</option>
+                                <option value="year">Last 12 months</option>
+                                <option value="custom">Custom range</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Project</label>
+                            <select id="projectSelect" class="filter-select">
+                                <option value="all">All projects</option>
+                                <option value="website">Website Redesign</option>
+                                <option value="mobile">Mobile App</option>
+                                <option value="api">API Integration</option>
+                            </select>
+                        </div>
+                        
+                        <button class="filter-btn" id="exportBtn">
+                            <i data-lucide="download"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ключевые показатели -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon" style="background: rgba(40, 98, 58, 0.15)">
+                            <i data-lucide="folder-kanban"></i>
+                        </div>
+                        <div class="kpi-card__content">
+                            <span class="kpi-label">Total Projects</span>
+                            <span class="kpi-value" id="totalProjects">24</span>
+                            <span class="kpi-trend trend-up">+3 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon" style="background: rgba(34, 197, 94, 0.15)">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="kpi-card__content">
+                            <span class="kpi-label">Completion Rate</span>
+                            <span class="kpi-value" id="completionRate">78%</span>
+                            <span class="kpi-trend trend-up">+12%</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon" style="background: rgba(59, 130, 246, 0.15)">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="kpi-card__content">
+                            <span class="kpi-label">Avg. Project Duration</span>
+                            <span class="kpi-value" id="avgDuration">45 days</span>
+                            <span class="kpi-trend trend-down">-3 days</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-card__icon" style="background: rgba(168, 85, 247, 0.15)">
+                            <i data-lucide="dollar-sign"></i>
+                        </div>
+                        <div class="kpi-card__content">
+                            <span class="kpi-label">Total Revenue</span>
+                            <span class="kpi-value" id="totalRevenue">$1.2M</span>
+                            <span class="kpi-trend trend-up">+24%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Графики и аналитика -->
+                <div class="reports-grid">
+                    <!-- График динамики проектов -->
+                    <div class="report-card">
+                        <div class="report-card__header">
+                            <h3>Project Timeline</h3>
+                            <div class="report-actions">
+                                <button class="report-action">
+                                    <i data-lucide="refresh-cw"></i>
+                                </button>
+                                <button class="report-action">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="report-chart">
+                            <canvas id="timelineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Распределение по статусам -->
+                    <div class="report-card">
+                        <div class="report-card__header">
+                            <h3>Project Status Distribution</h3>
+                            <div class="report-actions">
+                                <button class="report-action">
+                                    <i data-lucide="pie-chart"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="report-chart">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                        <div class="status-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #eab308"></span>
+                                <span>Planning (4)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #3b82f6"></span>
+                                <span>In Progress (12)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #22c55e"></span>
+                                <span>Completed (6)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background: #6b7280"></span>
+                                <span>On Hold (2)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Финансовая аналитика -->
+                    <div class="report-card">
+                        <div class="report-card__header">
+                            <h3>Financial Overview</h3>
+                            <div class="report-actions">
+                                <button class="report-action">
+                                    <i data-lucide="bar-chart-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="financial-stats">
+                            <div class="financial-item">
+                                <span class="financial-label">Planned Budget</span>
+                                <span class="financial-value">$1.5M</span>
+                                <span class="financial-trend">100%</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Actual Spend</span>
+                                <span class="financial-value">$1.2M</span>
+                                <span class="financial-trend trend-success">80%</span>
+                            </div>
+                            <div class="financial-item">
+                                <span class="financial-label">Remaining</span>
+                                <span class="financial-value">$300K</span>
+                                <span class="financial-trend">20%</span>
+                            </div>
+                            <div class="financial-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                                <span class="progress-label">Budget Utilization</span>
+                            </div>
+                        </div>
+                        <div class="report-chart small-chart">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Загрузка сотрудников -->
+                    <div class="report-card">
+                        <div class="report-card__header">
+                            <h3>Team Workload</h3>
+                            <div class="report-actions">
+                                <button class="report-action">
+                                    <i data-lucide="users"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="workload-list">
+                            <div class="workload-item">
+                                <div class="workload-info">
+                                    <span class="workload-name">John Doe</span>
+                                    <span class="workload-hours">32h / 40h</span>
+                                </div>
+                                <div class="progress-bar workload-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                                <span class="workload-role">Lead Developer</span>
+                            </div>
+                            <div class="workload-item">
+                                <div class="workload-info">
+                                    <span class="workload-name">Alice Smith</span>
+                                    <span class="workload-hours">38h / 40h</span>
+                                </div>
+                                <div class="progress-bar workload-bar">
+                                    <div class="progress-fill" style="width: 95%; background: #eab308"></div>
+                                </div>
+                                <span class="workload-role">UX Designer</span>
+                            </div>
+                            <div class="workload-item">
+                                <div class="workload-info">
+                                    <span class="workload-name">Robert Johnson</span>
+                                    <span class="workload-hours">45h / 40h</span>
+                                </div>
+                                <div class="progress-bar workload-bar">
+                                    <div class="progress-fill" style="width: 112%; background: #ef4444"></div>
+                                </div>
+                                <span class="workload-role">Backend Dev</span>
+                            </div>
+                            <div class="workload-item">
+                                <div class="workload-info">
+                                    <span class="workload-name">Mary Williams</span>
+                                    <span class="workload-hours">28h / 40h</span>
+                                </div>
+                                <div class="progress-bar workload-bar">
+                                    <div class="progress-fill" style="width: 70%"></div>
+                                </div>
+                                <span class="workload-role">QA Engineer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Таблица проектов -->
+                    <div class="report-card full-width">
+                        <div class="report-card__header">
+                            <h3>Project Performance</h3>
+                            <div class="report-actions">
+                                <button class="report-action">
+                                    <i data-lucide="filter"></i>
+                                </button>
+                                <button class="report-action">
+                                    <i data-lucide="download"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="projects-table-container">
+                            <table class="projects-table">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                        <th>Progress</th>
+                                        <th>Budget</th>
+                                        <th>Deadline</th>
+                                        <th>Team</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Website Redesign</td>
+                                        <td>Acme Corp</td>
+                                        <td><span class="status-badge status-progress">In Progress</span></td>
+                                        <td>
+                                            <div class="table-progress">
+                                                <span>75%</span>
+                                                <div class="progress-bar table-bar">
+                                                    <div class="progress-fill" style="width: 75%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$45k / $60k</td>
+                                        <td>Mar 25, 2026</td>
+                                        <td>4 members</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mobile App Development</td>
+                                        <td>Tech Ltd</td>
+                                        <td><span class="status-badge status-progress">In Progress</span></td>
+                                        <td>
+                                            <div class="table-progress">
+                                                <span>45%</span>
+                                                <div class="progress-bar table-bar">
+                                                    <div class="progress-fill" style="width: 45%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$28k / $80k</td>
+                                        <td>Apr 12, 2026</td>
+                                        <td>6 members</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Backend API Integration</td>
+                                        <td>Startup Inc</td>
+                                        <td><span class="status-badge status-review">Review</span></td>
+                                        <td>
+                                            <div class="table-progress">
+                                                <span>90%</span>
+                                                <div class="progress-bar table-bar">
+                                                    <div class="progress-fill" style="width: 90%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$32k / $35k</td>
+                                        <td>Mar 10, 2026</td>
+                                        <td>3 members</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cloud Migration</td>
+                                        <td>Enterprise Co</td>
+                                        <td><span class="status-badge status-planning">Planning</span></td>
+                                        <td>
+                                            <div class="table-progress">
+                                                <span>15%</span>
+                                                <div class="progress-bar table-bar">
+                                                    <div class="progress-fill" style="width: 15%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$12k / $120k</td>
+                                        <td>Jun 01, 2026</td>
+                                        <td>5 members</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Security Audit</td>
+                                        <td>Finance Corp</td>
+                                        <td><span class="status-badge status-completed">Completed</span></td>
+                                        <td>
+                                            <div class="table-progress">
+                                                <span>100%</span>
+                                                <div class="progress-bar table-bar">
+                                                    <div class="progress-fill" style="width: 100%"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>$25k / $25k</td>
+                                        <td>Feb 28, 2026</td>
+                                        <td>2 members</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../../js/layout.js"></script>
+    <script src="../../js/reports.js"></script>
+</body>
+</html>

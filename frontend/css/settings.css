@@ -1,0 +1,328 @@
+/* Settings Page Styles */
+
+.settings-workspace {
+    padding: 40px;
+    background: #050505;
+    min-height: calc(100vh - 70px);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.settings-title {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #a0e0b0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.settings-subtitle {
+    color: #a0a0a0;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.settings-card {
+    background: linear-gradient(135deg, #0f1215, #1a1f23);
+    border-radius: 24px;
+    border: 1px solid rgba(40, 98, 58, 0.2);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.settings-card:hover {
+    border-color: rgba(40, 98, 58, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+}
+
+.settings-card__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-card__icon {
+    width: 24px;
+    height: 24px;
+    stroke: #28623A;
+}
+
+.settings-card__header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #a0e0b0;
+    letter-spacing: 0.3px;
+}
+
+.settings-input,
+.settings-select,
+.settings-textarea {
+    padding: 14px 18px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 14px;
+    color: white;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.settings-input:focus,
+.settings-select:focus,
+.settings-textarea:focus {
+    outline: none;
+    border-color: #28623A;
+    background: #252525;
+    box-shadow: 0 0 0 4px rgba(40, 98, 58, 0.15);
+}
+
+.settings-input:hover,
+.settings-select:hover,
+.settings-textarea:hover {
+    border-color: #444;
+}
+
+.settings-input:read-only {
+    background: #161616;
+    border-color: #2a2a2a;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.settings-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.input-hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.input-error {
+    font-size: 12px;
+    color: #ff6b6b;
+    min-height: 18px;
+}
+
+/* Password field with toggle */
+.password-field {
+    position: relative;
+}
+
+.password-field .settings-input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    stroke: #888;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-password:hover {
+    stroke: #28623A;
+}
+
+/* Select styling */
+.settings-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+    cursor: pointer;
+}
+
+.settings-select option {
+    background: #1e1e1e;
+    color: white;
+}
+
+/* Action buttons */
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.settings-btn {
+    padding: 14px 32px;
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    letter-spacing: 0.5px;
+}
+
+.settings-btn--primary {
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 98, 58, 0.3);
+}
+
+.settings-btn--primary:hover {
+    background: linear-gradient(135deg, #2f7a4a, #235d35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 98, 58, 0.5);
+}
+
+.settings-btn--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #a0a0a0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settings-btn--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Loading state */
+.settings-btn--loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.settings-btn--loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: button-loading 0.8s linear infinite;
+}
+
+@keyframes button-loading {
+    to { transform: rotate(360deg); }
+}
+
+/* Success message */
+.settings-success {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 10px 30px rgba(40, 98, 58, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+}
+
+.settings-success i {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-workspace {
+        padding: 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings-card {
+        padding: 20px;
+    }
+    
+    .settings-actions {
+        flex-direction: column;
+    }
+    
+    .settings-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .settings-title {
+        font-size: 24px;
+    }
+    
+    .settings-subtitle {
+        font-size: 14px;
+    }
+}
+

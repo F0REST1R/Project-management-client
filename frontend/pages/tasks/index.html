@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tasks - Project Management System</title>
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/tasks.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <div id="sidebar"></div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <!-- HEADER -->
+            <div id="header"></div>
+
+            <!-- TASKS WORKSPACE -->
+            <main class="tasks-workspace">
+                <!-- Header с приветствием и ролью -->
+                <div class="tasks-header">
+                    <div class="tasks-header__left">
+                        <h1 class="tasks-title" id="pageTitle">My Tasks</h1>
+                        <p class="tasks-subtitle" id="pageSubtitle">Manage your tasks and stay productive</p>
+                    </div>
+                    
+                    <div class="tasks-actions">
+                        <button class="create-task-btn" id="createTaskBtn">
+                            <i data-lucide="plus"></i>
+                            New Task
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Фильтры (для всех ролей) -->
+                <div class="filters-section">
+                    <div class="filter-tabs" id="filterTabs">
+                        <button class="filter-tab active" data-filter="all">All Tasks</button>
+                        <button class="filter-tab" data-filter="today">Today</button>
+                        <button class="filter-tab" data-filter="upcoming">Upcoming</button>
+                        <button class="filter-tab" data-filter="overdue">Overdue</button>
+                        <button class="filter-tab" data-filter="completed">Completed</button>
+                    </div>
+
+                    <div class="filter-controls">
+                        <!-- Project selector (для клиентов и руководителей) -->
+                        <div class="project-selector" id="projectSelector" style="display: none;">
+                            <select id="projectFilter" class="project-select">
+                                <option value="all">All Projects</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort options -->
+                        <div class="sort-selector">
+                            <select id="sortBy" class="sort-select">
+                                <option value="dueDate">Sort by Due Date</option>
+                                <option value="priority">Sort by Priority</option>
+                                <option value="project">Sort by Project</option>
+                            </select>
+                        </div>
+
+                        <!-- View toggle -->
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="list">
+                                <i data-lucide="list"></i>
+                            </button>
+                            <button class="view-btn" data-view="board">
+                                <i data-lucide="columns"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Статистика (для руководителя) -->
+                <div class="stats-section" id="managerStats" style="display: none;">
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(40, 98, 58, 0.15)">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Completed Today</span>
+                            <span class="stat-value" id="completedToday">12</span>
+                        </div>
+                    </div>
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(234, 179, 8, 0.15)">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">In Progress</span>
+                            <span class="stat-value" id="inProgress">34</span>
+                        </div>
+                    </div>
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15)">
+                            <i data-lucide="alert-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Overdue</span>
+                            <span class="stat-value" id="overdueTasks">5</span>
+                        </div>
+                    </div>
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15)">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Team Members</span>
+                            <span class="stat-value" id="teamMembers">8</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Статистика для клиента -->
+                <div class="stats-section" id="clientStats" style="display: none;">
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(40, 98, 58, 0.15)">
+                            <i data-lucide="folder-kanban"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Active Projects</span>
+                            <span class="stat-value" id="clientProjects">3</span>
+                        </div>
+                    </div>
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(34, 197, 94, 0.15)">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Completed</span>
+                            <span class="stat-value" id="clientCompleted">24</span>
+                        </div>
+                    </div>
+                    <div class="stat-card small">
+                        <div class="stat-icon" style="background: rgba(234, 179, 8, 0.15)">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">In Progress</span>
+                            <span class="stat-value" id="clientInProgress">12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Container - List View -->
+                <div class="tasks-container" id="listView">
+                    <div class="tasks-list" id="tasksList">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Tasks Container - Board View (Kanban) -->
+                <div class="tasks-container board-view" id="boardView" style="display: none;">
+                    <div class="kanban-board" id="kanbanBoard">
+                        <!-- Kanban columns will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Модальное окно для создания/редактирования задачи -->
+                <div class="modal" id="taskModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 id="modalTitle">Create New Task</h2>
+                            <button class="modal-close" id="closeModalBtn">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Project *</label>
+                                <select id="taskProject" class="form-select">
+                                    <option value="">Select project</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Task Title *</label>
+                                <input type="text" id="taskTitle" class="form-input" placeholder="Enter task title">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="taskDescription" class="form-textarea" rows="3" placeholder="Enter task description"></textarea>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Assignee</label>
+                                    <select id="taskAssignee" class="form-select">
+                                        <option value="">Select assignee</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select id="taskPriority" class="form-select">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Due Date</label>
+                                    <input type="date" id="taskDueDate" class="form-input">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Planned Hours</label>
+                                    <input type="number" id="taskHours" class="form-input" placeholder="0" min="0" step="0.5">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status</label>
+                                <div class="dropdown" id="statusDropdown">
+                                    <div class="dropdown-selected">
+                                        To Do
+                                        <span class="dropdown-arrow">▼</span>
+                                    </div>
+                                    <div class="dropdown-menu">
+                                        <div class="dropdown-item" data-value="todo">To Do</div>
+                                        <div class="dropdown-item" data-value="in-progress">In Progress</div>
+                                        <div class="dropdown-item" data-value="review">Review</div>
+                                        <div class="dropdown-item" data-value="done">Done</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-error" id="taskError"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="modal-btn modal-btn--secondary" id="cancelModalBtn">Cancel</button>
+                            <button class="modal-btn modal-btn--primary" id="saveTaskBtn">Create Task</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Модальное окно просмотра задачи -->
+                <div class="modal" id="viewTaskModal">
+                    <div class="modal-content modal-lg">
+                        <div class="modal-header">
+                            <h2>Task Details</h2>
+                            <button class="modal-close" id="closeViewModalBtn">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="task-detail-header">
+                                <div>
+                                    <h3 id="viewTaskTitle">Task Title</h3>
+                                    <p id="viewTaskProject" class="task-project">Project Name</p>
+                                </div>
+                                <span class="priority-badge" id="viewTaskPriority">Medium</span>
+                            </div>
+
+                            <div class="task-detail-meta">
+                                <div class="meta-item">
+                                    <i data-lucide="user"></i>
+                                    <span id="viewTaskAssignee">John Doe</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i data-lucide="calendar"></i>
+                                    <span id="viewTaskDueDate">Mar 25, 2026</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i data-lucide="clock"></i>
+                                    <span id="viewTaskHours">8h planned</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i data-lucide="check-circle"></i>
+                                    <span id="viewTaskStatus">In Progress</span>
+                                </div>
+                            </div>
+
+                            <div class="task-detail-section">
+                                <h4>Description</h4>
+                                <p id="viewTaskDescription">Task description goes here...</p>
+                            </div>
+
+                            <div class="task-detail-section">
+                                <h4>Comments</h4>
+                                <div class="comments-section" id="taskComments">
+                                    <!-- Comments will be loaded here -->
+                                </div>
+                                <div class="add-comment">
+                                    <textarea id="newComment" placeholder="Add a comment..." rows="2"></textarea>
+                                    <button class="comment-btn" id="addCommentBtn">Post Comment</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="modal-btn modal-btn--primary" id="editTaskBtn">Edit Task</button>
+                            <button class="modal-btn modal-btn--secondary" id="closeViewBtn">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../../js/layout.js"></script>
+    <script src="../../js/tasks.js"></script>
+</body>
+</html>

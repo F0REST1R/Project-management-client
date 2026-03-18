@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Employees - Project Management System</title>
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/employees.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <div id="sidebar"></div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <!-- HEADER -->
+            <div id="header"></div>
+
+            <!-- EMPLOYEES WORKSPACE -->
+            <main class="employees-workspace">
+                <!-- Header с действиями -->
+                <div class="employees-header">
+                    <div class="employees-header__left">
+                        <h1 class="employees-title">Team Members</h1>
+                        <p class="employees-subtitle">Manage your employees, roles, and workload</p>
+                    </div>
+                    
+                    <div class="employees-actions">
+                        <div class="search-box">
+                            <i data-lucide="search"></i>
+                            <input type="text" id="searchEmployee" placeholder="Search employees..." class="search-input">
+                        </div>
+                        
+                        <button class="filter-btn" id="filterBtn">
+                            <i data-lucide="sliders"></i>
+                            Filter
+                        </button>
+                        
+                        <button class="create-btn" id="createEmployeeBtn">
+                            <i data-lucide="plus"></i>
+                            Add Employee
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Статистика по сотрудникам -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card__icon" style="background: rgba(40, 98, 58, 0.15)">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div class="stat-card__content">
+                            <span class="stat-label">Total Employees</span>
+                            <span class="stat-value" id="totalEmployees">24</span>
+                            <span class="stat-trend">+3 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card__icon" style="background: rgba(34, 197, 94, 0.15)">
+                            <i data-lucide="user-check"></i>
+                        </div>
+                        <div class="stat-card__content">
+                            <span class="stat-label">Active</span>
+                            <span class="stat-value" id="activeEmployees">22</span>
+                            <span class="stat-trend">92% of total</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card__icon" style="background: rgba(239, 68, 68, 0.15)">
+                            <i data-lucide="user-x"></i>
+                        </div>
+                        <div class="stat-card__content">
+                            <span class="stat-label">Inactive</span>
+                            <span class="stat-value" id="inactiveEmployees">2</span>
+                            <span class="stat-trend">On leave</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card__icon" style="background: rgba(168, 85, 247, 0.15)">
+                            <i data-lucide="clock"></i>
+                        </div>
+                        <div class="stat-card__content">
+                            <span class="stat-label">Avg Workload</span>
+                            <span class="stat-value" id="avgWorkload">76%</span>
+                            <span class="stat-trend trend-up">+5% vs last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Фильтры по должностям -->
+                <div class="role-filters">
+                    <button class="role-filter active" data-role="all">All Roles</button>
+                    <button class="role-filter" data-role="developer">Developers</button>
+                    <button class="role-filter" data-role="designer">Designers</button>
+                    <button class="role-filter" data-role="analyst">Analysts</button>
+                    <button class="role-filter" data-role="qa">QA Engineers</button>
+                    <button class="role-filter" data-role="devops">DevOps</button>
+                    <button class="role-filter" data-role="manager">Managers</button>
+                </div>
+
+                <!-- Таблица сотрудников -->
+                <div class="employees-table-container">
+                    <table class="employees-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Position</th>
+                                <th>Hourly Rate</th>
+                                <th>Workload</th>
+                                <th>Projects</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <!-- Данные будут загружаться через JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Модальное окно для создания/редактирования сотрудника -->
+                <div class="modal" id="employeeModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 id="modalTitle">Add New Employee</h2>
+                            <button class="modal-close" id="closeModalBtn">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" id="firstName" class="form-input" placeholder="Enter first name">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" id="lastName" class="form-input" placeholder="Enter last name">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" id="email" class="form-input" placeholder="employee@company.com">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Position *</label>
+                                    <select id="position" class="form-select">
+                                        <option value="">Select position</option>
+                                        <option value="developer">Developer</option>
+                                        <option value="senior-developer">Senior Developer</option>
+                                        <option value="designer">Designer</option>
+                                        <option value="analyst">Analyst</option>
+                                        <option value="qa">QA Engineer</option>
+                                        <option value="devops">DevOps Engineer</option>
+                                        <option value="project-manager">Project Manager</option>
+                                        <option value="team-lead">Team Lead</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Hourly Rate ($) *</label>
+                                    <input type="number" id="hourlyRate" class="form-input" placeholder="0.00" min="0" step="0.01">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Login *</label>
+                                    <input type="text" id="login" class="form-input" placeholder="username">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Password *</label>
+                                    <input type="password" id="password" class="form-input" placeholder="••••••••">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="isActive" checked>
+                                    <span>Active employee</span>
+                                </label>
+                            </div>
+
+                            <div class="form-error" id="employeeError"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="modal-btn modal-btn--secondary" id="cancelModalBtn">Cancel</button>
+                            <button class="modal-btn modal-btn--primary" id="saveEmployeeBtn">Save Employee</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Модальное окно просмотра деталей -->
+                <div class="modal" id="viewModal">
+                    <div class="modal-content modal-lg">
+                        <div class="modal-header">
+                            <h2>Employee Details</h2>
+                            <button class="modal-close" id="closeViewModalBtn">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="modal-body">
+                            <div class="employee-profile">
+                                <div class="profile-header">
+                                    <div class="profile-avatar" id="viewAvatar">AL</div>
+                                    <div class="profile-info">
+                                        <h3 id="viewFullName">Alex Lesnik</h3>
+                                        <p id="viewPosition">Developer</p>
+                                    </div>
+                                    <span class="profile-status" id="viewStatus">Active</span>
+                                </div>
+
+                                <div class="profile-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Email</span>
+                                        <span class="detail-value" id="viewEmail">alex@company.com</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Login</span>
+                                        <span class="detail-value" id="viewLogin">alesnik</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Hourly Rate</span>
+                                        <span class="detail-value" id="viewRate">$35.00</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Projects</span>
+                                        <span class="detail-value" id="viewProjects">4</span>
+                                    </div>
+                                </div>
+
+                                <div class="profile-section">
+                                    <h4>Current Projects</h4>
+                                    <div class="project-list" id="viewProjectsList">
+                                        <!-- Projects will be loaded here -->
+                                    </div>
+                                </div>
+
+                                <div class="profile-section">
+                                    <h4>Recent Activity</h4>
+                                    <div class="activity-list" id="viewActivity">
+                                        <!-- Activity will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="modal-btn modal-btn--primary" id="editFromViewBtn">Edit Employee</button>
+                            <button class="modal-btn modal-btn--secondary" id="closeViewBtn">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../../js/layout.js"></script>
+    <script src="../../js/employees.js"></script>
+</body>
+</html>

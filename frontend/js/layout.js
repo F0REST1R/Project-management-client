@@ -2,6 +2,7 @@ async function loadLayout(){
 
 	const sidebar = document.getElementById("sidebar")
 	const header = document.getElementById("header")
+	
 
 	if(sidebar){
 
@@ -109,6 +110,26 @@ function setActiveNavigation(){
 
 	if(path.includes("clients")){
 		currentPage = "clients"
+	}
+
+	if(path.includes("settings")){
+		currentPage = "settings"
+	}
+
+	if(path.includes("reports")){
+		currentPage = "reports"
+	}
+
+	if(path.includes("finance")){
+		currentPage = "finance"
+	}
+
+	if(path.includes("employees")){
+		currentPage = "employees"
+	}
+
+	if(path.includes("tasks")){
+		currentPage = "tasks"
 	}
 	
 	const items =
