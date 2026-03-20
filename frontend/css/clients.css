@@ -426,3 +426,509 @@
         padding: 25px;
     }
 }
+/* Search and Filters Row */
+.clients-search-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.clients-search {
+    flex: 1;
+    min-width: 300px;
+    margin-bottom: 0;
+}
+
+.client-search-input {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Custom Dropdown Styles */
+.filter-dropdown {
+    position: relative;
+    min-width: 200px;
+}
+
+.filter-select {
+    appearance: none;
+    width: 100%;
+    padding: 14px 45px 14px 20px;
+    background: linear-gradient(135deg, #0f1215, #1a1f23);
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    border-radius: 40px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0e0b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 16px;
+}
+
+.filter-select:hover {
+    border-color: #28623A;
+    background: linear-gradient(135deg, #151a1e, #1f262b);
+    box-shadow: 0 6px 15px rgba(40, 98, 58, 0.2);
+    transform: translateY(-1px);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #28623A;
+    box-shadow: 0 0 0 4px rgba(40, 98, 58, 0.15), 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Стилизация выпадающего списка */
+.filter-select option {
+    background: #1a1f23;
+    color: white;
+    padding: 12px;
+    font-size: 14px;
+}
+
+/* Для Firefox */
+.filter-select option:hover {
+    background: #28623A;
+}
+
+/* Альтернативный вариант - кастомный дропдаун (если нужен еще красивее) */
+.custom-dropdown {
+    position: relative;
+}
+
+.custom-dropdown-trigger {
+    padding: 14px 45px 14px 20px;
+    background: linear-gradient(135deg, #0f1215, #1a1f23);
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    border-radius: 40px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.custom-dropdown-trigger:hover {
+    border-color: #28623A;
+    background: linear-gradient(135deg, #151a1e, #1f262b);
+    box-shadow: 0 6px 15px rgba(40, 98, 58, 0.2);
+    transform: translateY(-1px);
+}
+
+.custom-dropdown-trigger span {
+    color: #a0e0b0;
+}
+
+.custom-dropdown-trigger i {
+    width: 16px;
+    height: 16px;
+    stroke: #a0e0b0;
+    transition: transform 0.3s ease;
+}
+
+.custom-dropdown.active .custom-dropdown-trigger i {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, #0f1215, #1a1f23);
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    border-radius: 20px;
+    overflow: hidden;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    display: none;
+}
+
+.custom-dropdown.active .custom-dropdown-menu {
+    display: block;
+    animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.custom-dropdown-item {
+    padding: 12px 20px;
+    color: #a0a0a0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.custom-dropdown-item:hover {
+    background: rgba(40, 98, 58, 0.2);
+    color: white;
+    padding-left: 25px;
+}
+
+.custom-dropdown-item.selected {
+    background: rgba(40, 98, 58, 0.25);
+    color: white;
+    position: relative;
+}
+
+.custom-dropdown-item.selected::before {
+    content: '✓';
+    position: absolute;
+    right: 20px;
+    color: #22c55e;
+}
+
+/* Client Card Styles */
+.client-card {
+    width: 550px;
+    max-width: 95%;
+}
+
+.client-card-content {
+    display: flex;
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.client-card-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.client-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 10px 20px rgba(40, 98, 58, 0.3);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.client-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 30px rgba(40, 98, 58, 0.4);
+}
+
+.edit-avatar-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.edit-avatar-btn:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #2f7a4a, #235d35);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.edit-avatar-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.client-card-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    min-height: 50px;
+}
+
+.detail-label {
+    color: #a0e0b0;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.detail-value {
+    color: white;
+    font-size: 15px;
+    font-weight: 400;
+    max-width: 60%;
+    text-align: right;
+    word-break: break-word;
+}
+
+.stage-badge {
+    padding: 6px 16px;
+    background: rgba(40, 98, 58, 0.2);
+    border-radius: 30px;
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    font-size: 13px;
+}
+
+/* Edit mode styles */
+.edit-input,
+.edit-select {
+    width: 60%;
+    padding: 8px 12px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-align: right;
+}
+
+.edit-input:focus,
+.edit-select:focus {
+    outline: none;
+    border-color: #28623A;
+    box-shadow: 0 0 0 3px rgba(40, 98, 58, 0.15);
+}
+
+.edit-select {
+    cursor: pointer;
+}
+
+.edit-select option {
+    background: #1e1e1e;
+    color: white;
+}
+
+#cardError {
+    margin: 0 30px 20px;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .client-card-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .client-card-details {
+        width: 100%;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .detail-value,
+    .edit-input,
+    .edit-select {
+        width: 100%;
+        text-align: left;
+    }
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    color: #a0a0a0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.view-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    color: #3b82f6;
+}
+
+.edit-btn:hover {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.action-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+/* Client Card */
+.client-card {
+    width: 550px;
+    max-width: 95%;
+}
+
+.client-card-content {
+    display: flex;
+    gap: 30px;
+    padding: 20px 0;
+}
+
+.client-card-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.client-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 10px 20px rgba(40, 98, 58, 0.3);
+}
+
+.client-card-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-label {
+    color: #a0e0b0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: white;
+    font-size: 15px;
+}
+
+.stage-badge {
+    padding: 4px 12px;
+    background: rgba(40, 98, 58, 0.2);
+    border-radius: 30px;
+    border: 1px solid rgba(40, 98, 58, 0.3);
+}
+
+@media (max-width: 768px) {
+    .client-card-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .client-card-details {
+        width: 100%;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+/* Projects Button */
+.projects-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+}
+
+/* Projects Table Container */
+.projects-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Project Status Badges */
+.status-active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+.status-planning {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+.status-completed {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+}

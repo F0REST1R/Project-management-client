@@ -39,32 +39,41 @@
 
 				</div>
 
-				<div class="clients-search">
+                <div class="clients-search-section">
+                    <div class="clients-search">
+                        <input
+                            type="text"
+                            placeholder="Search clients..."
+                            class="client-search-input"
+                            id="clientSearch"
+                        >
+                    </div>
 
-					<input
-						type="text"
-						placeholder="Search client..."
-						class="client-search-input"
-					>
-
-				</div>
-
+                    <div class="clients-filters">
+                        <div class="filter-dropdown">
+                            <select id="stageFilter" class="filter-select">
+                                <option value="all">All Stages</option>
+                                <option value="Lead">Lead</option>
+                                <option value="Commercial Offer">Commercial Offer</option>
+                                <option value="Negotiation">Negotiation</option>
+                                <option value="Signed">Signed</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 				<table class="clients-table">
 
-					<thead>
-
-						<tr>
-
-							<th>Name</th>
-							<th>INN</th>
-							<th>Email</th>
-							<th>Phone</th>
-							<th>Stage</th>
-							<th>Projects</th>
-
-						</tr>
-
-					</thead>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>INN</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Stage</th>
+                            <th>Projects</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>        
 
 					<tbody>
 

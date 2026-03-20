@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS clients (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL, 
+    inn VARCHAR(12) NOT NULL, 
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(20) UNIQUE,
+    stage VARCHAR(50) DEFAULT 'Negotation',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
