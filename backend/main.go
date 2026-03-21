@@ -16,6 +16,7 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler(cfg)
 	clientHandler := handlers.NewClientHandler()
+	projectHandler := handlers.NewProjectHandler()
 
 	//Страница регистрации
 	http.HandleFunc("/api/auth/register", cors(authHandler.Register))
@@ -46,6 +47,64 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})) 
+        http.HandleFunc("/api/projects", cors(projectHandler.GetProjects))
+	    http.HandleFunc("/api/projects/", cors(func(w http.ResponseWriter, r *http.Request) {
+        path := strings.TrimPrefix(r.URL.Path, "/api/projects/")
+
+        // GET /api/projects - список проектов
+        if path == "" && r.Method == "GET" {
+            projectHandler.GetProjects(w, r)
+            return
+        }
+
+        // GET /api/projects/archived - архивные проекты
+        if path == "archived" && r.Method == "GET" {
+            projectHandler.GetArchivedProjects(w, r)
+            return
+        }
+
+        // POST /api/projects/create - создание
+        if path == "create" && r.Method == "POST" {
+            projectHandler.CreateProject(w, r)
+            return
+        }
+
+        parts := strings.Split(path, "/")
+        if len(parts) >= 2 {
+            action := parts[1]
+
+            switch action {
+            case "archive":
+                if r.Method == "PUT" {
+                    projectHandler.ArchiveProject(w, r)
+                    return
+                }
+            case "restore":
+                if r.Method == "PUT" {
+                    projectHandler.RestoreProject(w, r)
+                    return
+                }
+            }
+        }
+
+        // Обработка /api/projects/{id}
+        if path != "" && path != "create" && path != "archived" {
+            switch r.Method {
+            case "GET":
+                projectHandler.GetProject(w, r)
+            case "PUT":
+                projectHandler.UpdateProject(w, r)
+            case "DELETE":
+                projectHandler.DeleteProject(w, r)
+            default:
+                http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+            }
+            return
+        }
+
+        http.NotFound(w, r)
+    }))
+
     http.HandleFunc("/api/clients/create", cors(clientHandler.CreateClient)) 
 
 	
@@ -70,7 +129,7 @@ func cors(handler http.HandlerFunc) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		
+
 		handler(w, r)
 	}
 }

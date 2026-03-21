@@ -1,51 +1,47 @@
+let projects = [];
+window.allClients = [];
+let statusValue = "initiation";
+let currentView = "active";
+let showArchive = false;
+
 document.addEventListener("DOMContentLoaded", () => {
-    initProjects();
     initModal();
     initDropdown();
+    loadProjects();
     initArchive();
     loadClients();
 });
-
-let projects = [];
-let statusValue = "initiation";
-
-function initProjects() {
-    // Load projects from localStorage
-    projects = JSON.parse(localStorage.getItem("projects")) || [];
-    renderProjectsTable();
-}
 
 function renderProjectsTable() {
     const tbody = document.querySelector(".projects-table tbody");
     if (!tbody) return;
 
-    const activeProjects = projects.filter(p => !p.archived);
-
-    if (activeProjects.length === 0) {
+    // Используем projects, а не activeProjects
+    if (projects.length === 0) {
         tbody.innerHTML = `
-            <tr>
+             <tr>
                 <td colspan="6" style="text-align: center; padding: 40px;">
                     <div style="color: #888; font-size: 16px;">
                         No projects yet. Click "Create Project" to get started.
                     </div>
-                </td>
-            </tr>
+                 </td>
+             </tr>
         `;
         return;
     }
 
-    tbody.innerHTML = activeProjects.map(project => {
+    tbody.innerHTML = projects.map(project => {
         const statusClass = getStatusClass(project.status);
         const statusText = getStatusText(project.status);
         
         return `
             <tr onclick="viewProject(${project.id})">
                 <td><strong>${project.name}</strong></td>
-                <td>${getClientName(project.clientId)}</td>
-                <td>${getManagerName(project.managerId)}</td>
+                <td>${project.client_name || '—'}</td>
+                <td>${project.manager_name || '—'}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                <td>${formatDate(project.startDate)}</td>
-                <td>${project.endDate ? formatDate(project.endDate) : '—'}</td>
+                <td>${formatDate(project.start_date)}</td>
+                <td>${project.end_date ? formatDate(project.end_date) : '—'}</td>
             </tr>
         `;
     }).join('');
@@ -114,7 +110,7 @@ function initModal() {
     // Open modal
     if (openBtn) {
         openBtn.addEventListener("click", () => {
-            loadClients();
+            renderClientSelect();
             document.getElementById("projectStart").value = 
                 new Date().toISOString().split("T")[0];
             modal.style.display = "flex";
@@ -183,17 +179,11 @@ function validateForm() {
     error.innerText = "";
 
     const name = document.getElementById("projectName").value.trim();
-    const client = document.getElementById("projectClient").value;
     const start = document.getElementById("projectStart").value;
     const end = document.getElementById("projectEnd").value;
 
     if (name.length < 3) {
         error.innerText = "Project name must be at least 3 characters";
-        return false;
-    }
-
-    if (!client) {
-        error.innerText = "Please select a client";
         return false;
     }
 
@@ -211,41 +201,89 @@ function validateForm() {
     return true;
 }
 
-function createProject() {
-    const name = document.getElementById("projectName").value.trim();
-    const clientId = document.getElementById("projectClient").value;
-    const managerId = document.getElementById("projectManager").value;
-    const startDate = document.getElementById("projectStart").value;
-    const endDate = document.getElementById("projectEnd").value || null;
-    const status = statusValue;
 
-    const projects = JSON.parse(localStorage.getItem("projects")) || [];
+async function loadProjects() {
+    const token = localStorage.getItem('token')
+    if (!token) {
+        window.location.href = '/auth/register.html'
+        return
+    }
 
-    const newProject = {
-        id: Date.now(),
-        name,
-        clientId,
-        managerId,
-        startDate,
-        endDate,
-        status,
-        archived: false,
-        createdAt: new Date().toISOString()
-    };
+    try {
+        const response = await fetch('http://localhost:8080/api/projects?archived=false', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
 
-    projects.push(newProject);
-    localStorage.setItem("projects", JSON.stringify(projects));
+        if (!response.ok) throw new Error('Failed to load projects')
 
-    // Show success notification
-    showNotification("Project created successfully!", "success");
+        const data = await response.json()
+        projects = data
+        renderProjectsTable()
+    } catch (error) {
+        console.error('Error loading projects:', error)
+        showNotification('Failed to load projects', 'error')
+    }
+}
 
-    // Close modal and reset
-    document.getElementById("projectModal").style.display = "none";
-    document.body.style.overflow = "auto";
-    resetForm();
+async function createProject() {
+    const token = localStorage.getItem('token')
+    if (!token) {
+        window.location.href = '/auth/register.html'
+        return
+    }
 
-    // Refresh table
-    initProjects();
+    const name = document.getElementById("projectName").value.trim()
+    const clientId = document.getElementById("projectClient").value
+    const managerId = document.getElementById("projectManager").value
+    const startDate = document.getElementById("projectStart").value
+    const endDate = document.getElementById("projectEnd").value || null
+    const status = statusValue
+
+    if (endDate === "") endDate = null
+    // Если клиент не выбран, отправляем null
+    const finalClientId = clientId === "" ? null : parseInt(clientId)
+
+    try {
+        const response = await fetch('http://localhost:8080/api/projects/create', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                client_id: finalClientId,
+                manager_id: parseInt(managerId),
+                start_date: startDate,
+                end_date: endDate,
+                status: status
+            })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to create project')
+        }
+
+        showNotification("Project created successfully!", "success")
+        
+        document.getElementById("projectModal").style.display = "none"
+        document.body.style.overflow = "auto"
+        
+        // await loadProjects(false)
+        await loadProjects()
+        showArchive = false
+    } catch (error) {
+        console.error('Error creating project:', error)
+        const errorDiv = document.getElementById("projectError")
+        errorDiv.innerText = error.message
+        showNotification(error.message, 'error')
+    }
 }
 
 function resetForm() {
@@ -303,44 +341,99 @@ function initDropdown() {
     });
 }
 
-function loadClients() {
-    const clientSelect = document.getElementById("projectClient");
-    if (!clientSelect) return;
-
-    const clients = JSON.parse(localStorage.getItem("clients")) || [];
-    clientSelect.innerHTML = "";
-
-    if (clients.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.innerText = "No clients yet";
-        option.disabled = true;
-        option.selected = true;
-        clientSelect.appendChild(option);
-        return;
+async function loadClients() {
+    const token = localStorage.getItem('token')
+    if (!token) {
+        window.location.href = '/auth/register.html'
+        return
     }
 
-    clients.forEach(client => {
-        const option = document.createElement("option");
-        option.value = client.id;
-        option.innerText = client.name;
-        clientSelect.appendChild(option);
+    try {
+        const response = await fetch('http://localhost:8080/api/clients', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (!response.ok) throw new Error('Failed to load clients')
+
+        window.allClients = await response.json()
+        renderClientSelect()
+    } catch (error) {
+        console.error('Error loading clients:', error)
+    }
+}
+
+function renderClientSelect() {
+    const clientSelect = document.getElementById("projectClient")
+    if (!clientSelect) return
+
+    try {
+        clientSelect.innerHTML = '<option value="">No client (optional)</option>'
+        
+        if (window.allClients && window.allClients.length > 0) {
+            window.allClients.forEach(client => {
+                const option = document.createElement("option")
+                option.value = client.id
+                option.innerText = client.name
+                clientSelect.appendChild(option)
+            })
+        }
+    } catch (error) {
+        console.error('Error rendering client select:', error)
+        clientSelect.innerHTML = '<option value="">Error loading clients</option>'
+    }
+}
+
+//Кнопка показа проектов, которые находятся в архиве
+function initArchive() {
+    const archiveBtn = document.getElementById("viewArchive");
+    if (!archiveBtn) return;
+    
+    archiveBtn.addEventListener("click", async () => {
+        showArchive = !showArchive;  // переключаем состояние
+        
+        if (showArchive) {
+            // Показываем только архивные проекты
+            archiveBtn.textContent = "← Show Active";
+            archiveBtn.classList.add("active");
+            await loadArchivedProjects();
+        } else {
+            // Показываем все проекты
+            archiveBtn.textContent = "View Archive";
+            archiveBtn.classList.remove("active");
+            await loadProjects();
+        }
     });
 }
 
-function initArchive() {
-    const archiveBtn = document.getElementById("viewArchive");
-    if (archiveBtn) {
-        archiveBtn.addEventListener("click", () => {
-            const archived = projects.filter(p => p.archived);
-            if (archived.length === 0) {
-                showNotification("No archived projects", "info");
-            } else {
-                // Здесь можно открыть модалку с архивными проектами
-                console.log("Archived projects:", archived);
-                showNotification(`Found ${archived.length} archived projects`, "info");
+// Функция загрузки только архивных проектов
+async function loadArchivedProjects() {
+    const token = localStorage.getItem('token')
+    if (!token) {
+        window.location.href = '/auth/register.html'
+        return
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/api/projects/archived', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
-        });
+        })
+
+        if (!response.ok) throw new Error('Failed to load archived projects')
+
+        const data = await response.json()
+        projects = data
+        renderProjectsTable()
+    } catch (error) {
+        console.error('Error loading archived projects:', error)
+        showNotification('Failed to load archived projects', 'error')
     }
 }
 

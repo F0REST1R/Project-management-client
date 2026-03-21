@@ -499,3 +499,31 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
         overflow-x: auto;
     }
 }
+
+.archive-btn {
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px;
+    color: #a0a0a0;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.archive-btn:hover {
+    background: rgba(40, 98, 58, 0.15);
+    color: white;
+    border-color: #28623A;
+    transform: translateY(-2px);
+}
+
+.archive-btn.active {
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 98, 58, 0.3);
+}

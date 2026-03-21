@@ -16,8 +16,9 @@ const clientsTableBody = document.querySelector(".clients-table tbody")
 const searchInput = document.querySelector(".client-search-input")
 const filterSelect = document.getElementById("stageFilter")
 
+
 // ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
-let allClients = []           // Хранит всех клиентов из БД
+window.allClients = []           // Хранит всех клиентов из БД
 let editingClientId = null    // ID клиента в режиме редактирования
 
 // ==================== ИНИЦИАЛИЗАЦИЯ ====================
