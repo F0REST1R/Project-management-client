@@ -90,9 +90,6 @@ function renderClientsTable(clients) {
             <td>${client.projects_count || 0}</td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn view-btn" onclick="viewClient(${client.id})" title="View">
-                        <i data-lucide="eye"></i>
-                    </button>
                     <button class="action-btn edit-btn" onclick="editClient(${client.id})" title="Edit">
                         <i data-lucide="edit-2"></i>
                     </button>

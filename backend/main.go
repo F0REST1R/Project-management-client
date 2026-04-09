@@ -17,17 +17,18 @@ func main() {
 	authHandler := handlers.NewAuthHandler(cfg)
 	clientHandler := handlers.NewClientHandler()
 	projectHandler := handlers.NewProjectHandler()
+    employeeHandler := handlers.NewEmployeeHandler()
 
 	//Страница регистрации
 	http.HandleFunc("/api/auth/register", cors(authHandler.Register))
 	http.HandleFunc("/api/auth/login", cors(authHandler.Login))
-
 	http.HandleFunc("/api/auth/me", cors(authHandler.GetCurrentUser))
 	
 	http.HandleFunc("/health", health)
 	
-    //Страница клиентов 
+    //=============== Страница клиентов ===============
     http.HandleFunc("/api/clients", cors(clientHandler.GetClients))   
+    http.HandleFunc("/api/clients/create", cors(clientHandler.CreateClient)) 
 	http.HandleFunc("/api/clients/", cors(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/api/clients/")
 		
@@ -47,6 +48,7 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})) 
+    //=============== Страница проектов ===============
         http.HandleFunc("/api/projects", cors(projectHandler.GetProjects))
 	    http.HandleFunc("/api/projects/", cors(func(w http.ResponseWriter, r *http.Request) {
         path := strings.TrimPrefix(r.URL.Path, "/api/projects/")
@@ -105,9 +107,29 @@ func main() {
         http.NotFound(w, r)
     }))
 
-    http.HandleFunc("/api/clients/create", cors(clientHandler.CreateClient)) 
-
-	
+    //=============== Страница работников ===============
+    http.HandleFunc("/api/employees", cors(employeeHandler.GetEmployees))
+    http.HandleFunc("/api/employees/positions", cors(employeeHandler.GetPositions))
+    http.HandleFunc("/api/employees/create", cors(employeeHandler.CreateEmployee))
+    http.HandleFunc("/api/employees/", cors(func(w http.ResponseWriter, r *http.Request) {
+        path := strings.TrimPrefix(r.URL.Path, "/api/employees/")
+        
+        if path == "" {
+            http.NotFound(w, r)
+            return
+        }
+        
+        switch r.Method {
+        case "GET":
+            employeeHandler.GetEmployee(w, r)
+        case "PUT":
+            employeeHandler.UpdateEmployee(w, r)
+        case "DELETE":
+            employeeHandler.DeleteEmployee(w, r)
+        default:
+            http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        }
+    }))
 	log.Println("Server started on :8080")
 	http.ListenAndServe(":8080", nil)
 

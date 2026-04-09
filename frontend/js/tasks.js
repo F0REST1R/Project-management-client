@@ -1,11 +1,11 @@
-// tasks.js - исправленная версия
+// tasks.js - с поддержкой выбранного проекта
 
 // Тестовые данные
-const tasks = [
+let tasks = [
     {
         id: 1,
         title: 'Design review for homepage',
-        description: 'Review the new homepage design with the team',
+        description: 'Review the new homepage design with the team. Need to check responsiveness and accessibility.',
         project: 'Website Redesign',
         projectId: 1,
         assignee: 'John Doe',
@@ -25,7 +25,7 @@ const tasks = [
     {
         id: 2,
         title: 'API integration for payment gateway',
-        description: 'Integrate Stripe payment gateway',
+        description: 'Integrate Stripe payment gateway. Handle webhooks and error cases.',
         project: 'Mobile App Development',
         projectId: 2,
         assignee: 'Alice Smith',
@@ -39,7 +39,7 @@ const tasks = [
     {
         id: 3,
         title: 'Fix navigation bug on mobile',
-        description: 'Navigation menu not working on iOS',
+        description: 'Navigation menu not working on iOS devices. Hamburger menu doesn\'t respond.',
         project: 'Mobile App Development',
         projectId: 2,
         assignee: 'John Doe',
@@ -53,7 +53,7 @@ const tasks = [
     {
         id: 4,
         title: 'Update documentation',
-        description: 'Update API documentation',
+        description: 'Update API documentation with new endpoints and examples.',
         project: 'Backend API Integration',
         projectId: 3,
         assignee: 'Robert Johnson',
@@ -67,7 +67,7 @@ const tasks = [
     {
         id: 5,
         title: 'Security audit',
-        description: 'Perform security audit on the system',
+        description: 'Perform security audit on the system. Check for vulnerabilities.',
         project: 'Security Audit',
         projectId: 5,
         assignee: 'Mary Williams',
@@ -76,6 +76,20 @@ const tasks = [
         dueDate: '2026-03-10',
         status: 'overdue',
         hours: 6,
+        comments: []
+    },
+    {
+        id: 6,
+        title: 'Database optimization',
+        description: 'Optimize slow queries and add indexes',
+        project: 'Website Redesign',
+        projectId: 1,
+        assignee: 'Alex Lesnik',
+        assigneeId: 1,
+        priority: 'high',
+        dueDate: '2026-03-22',
+        status: 'todo',
+        hours: 5,
         comments: []
     }
 ];
@@ -88,7 +102,7 @@ const employees = [
     { id: 5, name: 'Mary Williams', role: 'employee' }
 ];
 
-const projects = [
+const projectsList = [
     { id: 1, name: 'Website Redesign', client: 'Acme Corp' },
     { id: 2, name: 'Mobile App Development', client: 'Tech Ltd' },
     { id: 3, name: 'Backend API Integration', client: 'Startup Inc' },
@@ -96,33 +110,68 @@ const projects = [
     { id: 5, name: 'Security Audit', client: 'Finance Corp' }
 ];
 
-// Текущий пользователь (можно менять для тестирования разных ролей)
+// Текущий пользователь
 let currentUser = {
     id: 1,
     name: 'Alex Lesnik',
-    role: 'manager', // Можно менять: 'employee', 'client', 'manager'
-    clientProjects: [1, 2, 3] // Для клиента
+    role: 'manager',
+    clientProjects: [1, 2, 3]
 };
 
 let currentFilter = 'all';
 let currentProject = 'all';
 let currentView = 'list';
 let editingId = null;
+let selectedProjectId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Tasks page loaded');
+    
+    // Проверяем, пришли ли мы с конкретного проекта
+    const fromProject = localStorage.getItem('fromProject');
+    const savedProjectId = localStorage.getItem('currentProjectId');
+    
+    if (fromProject === 'true' && savedProjectId) {
+        selectedProjectId = parseInt(savedProjectId);
+        // Очищаем флаги
+        localStorage.removeItem('fromProject');
+        localStorage.removeItem('currentProjectId');
+    }
+    
+    initProjectsLink();
     initUserInterface();
-    loadTasks();
     initFilters();
     initModal();
     initDropdown();
-    loadProjects();
-    loadEmployees();
+    loadProjectsSelect();
+    loadEmployeesSelect();
+    loadTasks();
     initEventListeners();
+    
+    // Если выбран проект, обновляем заголовок
+    if (selectedProjectId) {
+        updatePageHeaderForProject();
+    }
 });
 
+function updatePageHeaderForProject() {
+    const project = projectsList.find(p => p.id === selectedProjectId);
+    if (project) {
+        const title = document.getElementById('pageTitle');
+        const subtitle = document.getElementById('pageSubtitle');
+        if (title) title.textContent = `${project.name}`;
+        if (subtitle) subtitle.textContent = `Manage tasks for ${project.name}`;
+        
+        // Устанавливаем фильтр проекта
+        const projectFilter = document.getElementById('projectFilter');
+        if (projectFilter) {
+            projectFilter.value = selectedProjectId;
+            currentProject = selectedProjectId.toString();
+        }
+    }
+}
+
 function initEventListeners() {
-    // Добавляем обработчик для кнопки добавления комментария
     const addCommentBtn = document.getElementById('addCommentBtn');
     if (addCommentBtn) {
         addCommentBtn.addEventListener('click', addComment);
@@ -172,7 +221,7 @@ function loadClientProjects() {
     
     select.innerHTML = '<option value="all">All Projects</option>';
     
-    const clientProjectsList = projects.filter(p => currentUser.clientProjects?.includes(p.id));
+    const clientProjectsList = projectsList.filter(p => currentUser.clientProjects?.includes(p.id));
     clientProjectsList.forEach(project => {
         const option = document.createElement('option');
         option.value = project.id;
@@ -198,6 +247,11 @@ function loadTasks() {
         if (currentProject !== 'all') {
             filteredTasks = filteredTasks.filter(t => t.projectId == currentProject);
         }
+    }
+    
+    // Фильтрация по выбранному проекту (если пришли из проекта)
+    if (selectedProjectId && !currentProject || currentProject === 'all') {
+        filteredTasks = filteredTasks.filter(t => t.projectId === selectedProjectId);
     }
 
     // Фильтрация по вкладкам
@@ -232,13 +286,12 @@ function loadTasks() {
             } else if (sortBy === 'project') {
                 return a.project.localeCompare(b.project);
             }
+            return 0;
         });
     }
 
-    // Обновление статистики
     updateStats(filteredTasks);
 
-    // Рендеринг
     if (currentView === 'list') {
         renderListView(filteredTasks);
     } else {
@@ -246,25 +299,34 @@ function loadTasks() {
     }
 }
 
-function renderListView(tasks) {
+function renderListView(tasksArray) {
     const container = document.getElementById('tasksList');
     if (!container) return;
 
-    if (tasks.length === 0) {
+    if (tasksArray.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i data-lucide="check-circle"></i>
                 <h3>No tasks found</h3>
                 <p>${currentUser.role === 'employee' ? 'You have no tasks assigned.' : 'No tasks match your filters.'}</p>
+                ${currentUser.role === 'manager' ? '<button class="create-task-btn empty-state-btn" onclick="document.getElementById(\'createTaskBtn\').click()"><i data-lucide="plus"></i>Create Task</button>' : ''}
             </div>
         `;
         lucide.createIcons();
         return;
     }
 
-    container.innerHTML = tasks.map(task => {
+    container.innerHTML = tasksArray.map(task => {
         const today = new Date().toISOString().split('T')[0];
         const isOverdue = task.dueDate < today && task.status !== 'done';
+        
+        const statusDisplay = {
+            'todo': 'To Do',
+            'in-progress': 'In Progress',
+            'review': 'Review',
+            'done': 'Done',
+            'overdue': 'Overdue'
+        };
         
         return `
             <div class="task-item" onclick="window.viewTask(${task.id})">
@@ -273,16 +335,17 @@ function renderListView(tasks) {
                     <label for="task_${task.id}"></label>
                 </div>
                 <div class="task-content">
-                    <span class="task-title" style="${task.status === 'done' ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${task.title}</span>
-                    <span class="task-project">${task.project}</span>
+                    <span class="task-title" style="${task.status === 'done' ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${escapeHtml(task.title)}</span>
+                    <span class="task-project">${escapeHtml(task.project)}</span>
                     <span class="task-priority priority-${task.priority}">${task.priority.toUpperCase()}</span>
                     <span class="task-due-date ${isOverdue ? 'overdue' : ''}">
                         <i data-lucide="calendar"></i>
                         ${formatDate(task.dueDate)}
                     </span>
+                    <span class="task-status status-${task.status}">${statusDisplay[task.status] || task.status}</span>
                     <span class="task-assignee">
                         <i data-lucide="user"></i>
-                        ${task.assignee}
+                        ${escapeHtml(task.assignee)}
                     </span>
                 </div>
                 <div class="task-actions">
@@ -300,15 +363,15 @@ function renderListView(tasks) {
     lucide.createIcons();
 }
 
-function renderBoardView(tasks) {
+function renderBoardView(tasksArray) {
     const board = document.getElementById('kanbanBoard');
     if (!board) return;
 
     const columns = {
-        'todo': { title: 'To Do', color: '#6b7280', tasks: tasks.filter(t => t.status === 'todo') },
-        'in-progress': { title: 'In Progress', color: '#3b82f6', tasks: tasks.filter(t => t.status === 'in-progress') },
-        'review': { title: 'Review', color: '#eab308', tasks: tasks.filter(t => t.status === 'review') },
-        'done': { title: 'Done', color: '#22c55e', tasks: tasks.filter(t => t.status === 'done') }
+        'todo': { title: 'To Do', color: '#6b7280', tasks: tasksArray.filter(t => t.status === 'todo') },
+        'in-progress': { title: 'In Progress', color: '#3b82f6', tasks: tasksArray.filter(t => t.status === 'in-progress') },
+        'review': { title: 'Review', color: '#eab308', tasks: tasksArray.filter(t => t.status === 'review') },
+        'done': { title: 'Done', color: '#22c55e', tasks: tasksArray.filter(t => t.status === 'done') }
     };
 
     board.innerHTML = Object.entries(columns).map(([key, column]) => `
@@ -317,16 +380,18 @@ function renderBoardView(tasks) {
                 <h3>${column.title}</h3>
                 <span class="kanban-count">${column.tasks.length}</span>
             </div>
-            <div class="kanban-tasks" id="column-${key}">
+            <div class="kanban-tasks" id="column-${key}" data-status="${key}">
                 ${column.tasks.map(task => `
-                    <div class="kanban-task" draggable="true" data-task-id="${task.id}" ondragstart="window.dragStart(event)" ondragend="window.dragEnd(event)">
+                    <div class="kanban-task" draggable="true" data-task-id="${task.id}" 
+                         ondragstart="window.dragStart(event)" ondragend="window.dragEnd(event)"
+                         onclick="window.viewTask(${task.id})">
                         <div class="kanban-task-header">
-                            <span class="kanban-task-title">${task.title}</span>
+                            <span class="kanban-task-title">${escapeHtml(task.title)}</span>
                             <span class="task-priority priority-${task.priority}">${task.priority}</span>
                         </div>
                         <div class="kanban-task-footer">
-                            <span>${task.project}</span>
-                            <span>${task.assignee}</span>
+                            <span>${escapeHtml(task.project)}</span>
+                            <span>${escapeHtml(task.assignee)}</span>
                         </div>
                     </div>
                 `).join('')}
@@ -334,7 +399,6 @@ function renderBoardView(tasks) {
         </div>
     `).join('');
 
-    // Добавляем обработчики drag and drop
     document.querySelectorAll('.kanban-tasks').forEach(column => {
         column.addEventListener('dragover', dragOver);
         column.addEventListener('drop', drop);
@@ -343,7 +407,7 @@ function renderBoardView(tasks) {
     lucide.createIcons();
 }
 
-function updateStats(tasks) {
+function updateStats(tasksArray) {
     const today = new Date().toISOString().split('T')[0];
     
     const completedToday = document.getElementById('completedToday');
@@ -354,18 +418,17 @@ function updateStats(tasks) {
     const clientCompleted = document.getElementById('clientCompleted');
     const clientInProgress = document.getElementById('clientInProgress');
 
-    if (completedToday) completedToday.textContent = tasks.filter(t => t.status === 'done' && t.dueDate === today).length;
-    if (inProgress) inProgress.textContent = tasks.filter(t => t.status === 'in-progress').length;
-    if (overdueTasks) overdueTasks.textContent = tasks.filter(t => t.dueDate < today && t.status !== 'done').length;
+    if (completedToday) completedToday.textContent = tasksArray.filter(t => t.status === 'done' && t.dueDate === today).length;
+    if (inProgress) inProgress.textContent = tasksArray.filter(t => t.status === 'in-progress').length;
+    if (overdueTasks) overdueTasks.textContent = tasksArray.filter(t => t.dueDate < today && t.status !== 'done').length;
     if (teamMembers) teamMembers.textContent = employees.length;
     
     if (clientProjects) clientProjects.textContent = currentUser.clientProjects?.length || 0;
-    if (clientCompleted) clientCompleted.textContent = tasks.filter(t => t.status === 'done').length;
-    if (clientInProgress) clientInProgress.textContent = tasks.filter(t => t.status === 'in-progress' || t.status === 'review').length;
+    if (clientCompleted) clientCompleted.textContent = tasksArray.filter(t => t.status === 'done').length;
+    if (clientInProgress) clientInProgress.textContent = tasksArray.filter(t => t.status === 'in-progress' || t.status === 'review').length;
 }
 
 function initFilters() {
-    // Фильтры по вкладкам
     document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -375,16 +438,22 @@ function initFilters() {
         });
     });
 
-    // Фильтр по проекту
     const projectFilter = document.getElementById('projectFilter');
     if (projectFilter) {
         projectFilter.addEventListener('change', (e) => {
             currentProject = e.target.value;
+            // Если выбран конкретный проект, очищаем selectedProjectId
+            if (currentProject !== 'all') {
+                selectedProjectId = parseInt(currentProject);
+                updatePageHeaderForSelectedProject();
+            } else {
+                selectedProjectId = null;
+                resetPageHeader();
+            }
             loadTasks();
         });
     }
 
-    // Сортировка
     const sortBy = document.getElementById('sortBy');
     if (sortBy) {
         sortBy.addEventListener('change', () => {
@@ -392,7 +461,6 @@ function initFilters() {
         });
     }
 
-    // Переключение вида
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
@@ -410,6 +478,26 @@ function initFilters() {
     });
 }
 
+function updatePageHeaderForSelectedProject() {
+    const project = projectsList.find(p => p.id === selectedProjectId);
+    if (project) {
+        const title = document.getElementById('pageTitle');
+        const subtitle = document.getElementById('pageSubtitle');
+        if (title) title.textContent = `${project.name} Tasks`;
+        if (subtitle) subtitle.textContent = `Manage tasks for ${project.name}`;
+    }
+}
+
+function resetPageHeader() {
+    const title = document.getElementById('pageTitle');
+    const subtitle = document.getElementById('pageSubtitle');
+    if (title) title.textContent = 'All Tasks';
+    if (subtitle) subtitle.textContent = 'Overview of all team tasks';
+    
+    const backBtn = document.querySelector('.back-to-projects');
+    if (backBtn) backBtn.remove();
+}
+
 function initModal() {
     const modal = document.getElementById('taskModal');
     const openBtn = document.getElementById('createTaskBtn');
@@ -421,19 +509,24 @@ function initModal() {
     const closeViewModalBtn = document.getElementById('closeViewModalBtn');
     const editBtn = document.getElementById('editTaskBtn');
 
-    // Открыть модалку создания
     if (openBtn) {
         openBtn.addEventListener('click', () => {
             editingId = null;
             const modalTitle = document.getElementById('modalTitle');
             if (modalTitle) modalTitle.textContent = 'Create New Task';
             resetForm();
+            
+            // Если выбран проект, предустанавливаем его
+            if (selectedProjectId) {
+                const projectSelect = document.getElementById('taskProject');
+                if (projectSelect) projectSelect.value = selectedProjectId;
+            }
+            
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
     }
 
-    // Закрыть модалку
     function closeModal() {
         if (modal) modal.classList.remove('active');
         if (viewModal) viewModal.classList.remove('active');
@@ -446,7 +539,6 @@ function initModal() {
     if (closeViewBtn) closeViewBtn.addEventListener('click', closeModal);
     if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeModal);
 
-    // Закрыть по клику вне модалки
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
@@ -459,14 +551,12 @@ function initModal() {
         });
     }
 
-    // Закрыть по ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
         }
     });
 
-    // Сохранить задачу
     if (saveBtn) {
         saveBtn.addEventListener('click', () => {
             if (validateForm()) {
@@ -475,7 +565,6 @@ function initModal() {
         });
     }
 
-    // Редактировать из просмотра
     if (editBtn) {
         editBtn.addEventListener('click', () => {
             if (editingId) {
@@ -526,12 +615,12 @@ function initDropdown() {
     });
 }
 
-function loadProjects() {
+function loadProjectsSelect() {
     const select = document.getElementById('taskProject');
     if (!select) return;
 
     select.innerHTML = '<option value="">Select project</option>';
-    projects.forEach(project => {
+    projectsList.forEach(project => {
         const option = document.createElement('option');
         option.value = project.id;
         option.textContent = project.name;
@@ -539,7 +628,7 @@ function loadProjects() {
     });
 }
 
-function loadEmployees() {
+function loadEmployeesSelect() {
     const select = document.getElementById('taskAssignee');
     if (!select) return;
 
@@ -595,14 +684,21 @@ function saveTask() {
     const priority = document.getElementById('taskPriority')?.value;
     const dueDate = document.getElementById('taskDueDate')?.value;
     const hours = document.getElementById('taskHours')?.value;
-    const statusElem = document.querySelector('#statusDropdown .dropdown-selected');
+    const status = document.getElementById('taskStatus')?.value;
     
     let statusText = 'todo';
     if (statusElem) {
-        statusText = statusElem.childNodes[0].nodeValue.trim().toLowerCase().replace(' ', '-');
+        const statusMap = {
+            'To Do': 'todo',
+            'In Progress': 'in-progress',
+            'Review': 'review',
+            'Done': 'done'
+        };
+        const selectedText = statusElem.childNodes[0].nodeValue.trim();
+        statusText = statusMap[selectedText] || 'todo';
     }
 
-    const project = projects.find(p => p.id == projectId);
+    const project = projectsList.find(p => p.id == projectId);
     const assignee = employees.find(e => e.id == assigneeId);
 
     const taskData = {
@@ -617,7 +713,7 @@ function saveTask() {
         dueDate: dueDate || new Date().toISOString().split('T')[0],
         status: statusText,
         hours: parseFloat(hours) || 0,
-        comments: []
+        comments: editingId ? (tasks.find(t => t.id === editingId)?.comments || []) : []
     };
 
     if (editingId) {
@@ -639,7 +735,6 @@ function saveTask() {
     resetForm();
 }
 
-// Глобальные функции
 window.viewTask = function(id) {
     const task = tasks.find(t => t.id === id);
     if (!task) return;
@@ -663,7 +758,13 @@ window.viewTask = function(id) {
     if (descEl) descEl.textContent = task.description || 'No description provided.';
     
     if (statusEl) {
-        statusEl.textContent = task.status.replace('-', ' ').toUpperCase();
+        const statusDisplay = {
+            'todo': 'To Do',
+            'in-progress': 'In Progress',
+            'review': 'Review',
+            'done': 'Done'
+        };
+        statusEl.textContent = statusDisplay[task.status] || task.status;
     }
     
     if (priorityEl) {
@@ -671,7 +772,6 @@ window.viewTask = function(id) {
         priorityEl.className = `priority-badge priority-${task.priority}`;
     }
 
-    // Загрузка комментариев
     const commentsContainer = document.getElementById('taskComments');
     if (commentsContainer) {
         if (task.comments && task.comments.length > 0) {
@@ -680,10 +780,10 @@ window.viewTask = function(id) {
                     <div class="comment-avatar">${comment.author[0]}</div>
                     <div class="comment-content">
                         <div class="comment-header">
-                            <span class="comment-author">${comment.author}</span>
+                            <span class="comment-author">${escapeHtml(comment.author)}</span>
                             <span class="comment-time">${comment.time}</span>
                         </div>
-                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
                     </div>
                 </div>
             `).join('');
@@ -716,7 +816,7 @@ window.editTask = function(id) {
     const prioritySelect = document.getElementById('taskPriority');
     const dueDateInput = document.getElementById('taskDueDate');
     const hoursInput = document.getElementById('taskHours');
-    const statusElem = document.querySelector('#statusDropdown .dropdown-selected');
+    const statusSelect = document.getElementById('taskStatus');
 
     if (titleInput) titleInput.value = task.title;
     if (descInput) descInput.value = task.description || '';
@@ -763,14 +863,17 @@ window.toggleTaskStatus = function(id, completed) {
     }
 };
 
-// Drag and drop функции
 window.dragStart = function(e) {
-    e.dataTransfer.setData('text/plain', e.target.closest('.kanban-task')?.dataset.taskId);
-    e.target.style.opacity = '0.5';
+    const task = e.target.closest('.kanban-task');
+    if (task) {
+        e.dataTransfer.setData('text/plain', task.dataset.taskId);
+        task.style.opacity = '0.5';
+    }
 };
 
 window.dragEnd = function(e) {
-    e.target.style.opacity = '1';
+    const task = e.target.closest('.kanban-task');
+    if (task) task.style.opacity = '1';
 };
 
 function dragOver(e) {
@@ -785,7 +888,7 @@ function drop(e) {
     if (column && taskId) {
         const newStatus = column.dataset.status;
         const task = tasks.find(t => t.id == taskId);
-        if (task) {
+        if (task && task.status !== newStatus) {
             task.status = newStatus;
             loadTasks();
             showNotification('Task status updated', 'success');
@@ -819,8 +922,14 @@ function formatDate(dateString) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function showNotification(message, type = 'success') {
-    // Удаляем предыдущее уведомление если есть
     const oldNotification = document.querySelector('.notification');
     if (oldNotification) oldNotification.remove();
 
@@ -828,7 +937,7 @@ function showNotification(message, type = 'success') {
     notification.className = `notification notification--${type}`;
     notification.innerHTML = `
         <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}"></i>
-        <span>${message}</span>
+        <span>${escapeHtml(message)}</span>
     `;
     
     document.body.appendChild(notification);
@@ -841,48 +950,86 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// Добавляем стили для уведомлений
-const style = document.createElement('style');
-style.textContent = `
-    .notification {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
-        color: white;
-        padding: 16px 24px;
-        border-radius: 40px;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        display: flex;
+// Добавляем стили для новых элементов
+const additionalStyles = document.createElement('style');
+additionalStyles.textContent = `
+    .back-to-projects {
+        display: inline-flex;
         align-items: center;
-        gap: 12px;
-        transform: translateX(100%);
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 1001;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(40, 98, 58, 0.15);
         border: 1px solid rgba(40, 98, 58, 0.3);
-        backdrop-filter: blur(10px);
+        border-radius: 40px;
+        color: #a0e0b0;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
     }
     
-    .notification.show {
-        transform: translateX(0);
-        opacity: 1;
+    .back-to-projects:hover {
+        background: rgba(40, 98, 58, 0.25);
+        transform: translateX(-3px);
     }
     
-    .notification--success {
-        background: linear-gradient(135deg, #1a2a23, #1e3a2a);
-        border-left: 4px solid #22c55e;
+    .back-to-projects i {
+        width: 16px;
+        height: 16px;
     }
     
-    .notification i {
-        width: 20px;
-        height: 20px;
+    .tasks-header__left {
+        display: flex;
+        flex-direction: column;
     }
     
-    .notification--success i {
-        stroke: #22c55e;
+    .task-status {
+        padding: 4px 10px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 600;
+        min-width: 80px;
+        text-align: center;
+    }
+    
+    .status-todo {
+        background: rgba(107, 114, 128, 0.15);
+        color: #9ca3af;
+        border: 1px solid rgba(107, 114, 128, 0.3);
+    }
+    
+    .status-in-progress {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    .status-review {
+        background: rgba(234, 179, 8, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(234, 179, 8, 0.3);
+    }
+    
+    .status-done {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    
+    .status-overdue {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(additionalStyles);
+
+function initProjectsLink() {
+    const projectsBtn = document.getElementById('projectsLinkBtn');
+    if (projectsBtn) {
+        projectsBtn.addEventListener('click', () => {
+            window.location.href = '../projects/index.html';
+        });
+    }
+}

@@ -1,144 +1,145 @@
 // employees.js
 
-// Sample data
-let employees = [
-    {
-        id: 1,
-        firstName: 'Alex',
-        lastName: 'Lesnik',
-        email: 'alex.lesnik@company.com',
-        position: 'developer',
-        positionName: 'Developer',
-        hourlyRate: 35.00,
-        login: 'alesnik',
-        isActive: true,
-        workload: 80,
-        projects: 3
-    },
-    {
-        id: 2,
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@company.com',
-        position: 'senior-developer',
-        positionName: 'Senior Developer',
-        hourlyRate: 45.00,
-        login: 'jdoe',
-        isActive: true,
-        workload: 95,
-        projects: 4
-    },
-    {
-        id: 3,
-        firstName: 'Alice',
-        lastName: 'Smith',
-        email: 'alice.smith@company.com',
-        position: 'designer',
-        positionName: 'Designer',
-        hourlyRate: 32.00,
-        login: 'asmith',
-        isActive: true,
-        workload: 60,
-        projects: 2
-    },
-    {
-        id: 4,
-        firstName: 'Robert',
-        lastName: 'Johnson',
-        email: 'r.johnson@company.com',
-        position: 'qa',
-        positionName: 'QA Engineer',
-        hourlyRate: 30.00,
-        login: 'rjohnson',
-        isActive: false,
-        workload: 0,
-        projects: 0
-    },
-    {
-        id: 5,
-        firstName: 'Mary',
-        lastName: 'Williams',
-        email: 'm.williams@company.com',
-        position: 'project-manager',
-        positionName: 'Project Manager',
-        hourlyRate: 50.00,
-        login: 'mwilliams',
-        isActive: true,
-        workload: 85,
-        projects: 3
-    },
-    {
-        id: 6,
-        firstName: 'James',
-        lastName: 'Brown',
-        email: 'j.brown@company.com',
-        position: 'devops',
-        positionName: 'DevOps Engineer',
-        hourlyRate: 42.00,
-        login: 'jbrown',
-        isActive: true,
-        workload: 70,
-        projects: 2
-    }
-];
-
+// ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+let employees = [];
+let positions = [];
 let currentFilterRole = 'all';
 let searchTerm = '';
+let editingId = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadEmployees();
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPositions();
+    await loadEmployees();
     initFilters();
     initModal();
     updateStats();
 });
 
-function loadEmployees() {
+// ==================== ЗАГРУЗКА ДАННЫХ ====================
+
+async function loadPositions() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/auth/register.html';
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/api/employees/positions', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load positions');
+
+        positions = await response.json();
+        renderPositionSelect();
+    } catch (error) {
+        console.error('Error loading positions:', error);
+        showNotification('Failed to load positions', 'error');
+    }
+}
+
+async function loadEmployees() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/auth/register.html';
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:8080/api/employees', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load employees');
+
+        employees = await response.json();
+        renderEmployeesTable();
+        updateStats();
+    } catch (error) {
+        console.error('Error loading employees:', error);
+        showNotification('Failed to load employees', 'error');
+    }
+}
+
+function renderPositionSelect() {
+    const positionSelect = document.getElementById('position');
+    if (!positionSelect) return;
+
+    positionSelect.innerHTML = '<option value="">Select position</option>';
+    positions.forEach(pos => {
+        const option = document.createElement('option');
+        option.value = pos.id;
+        option.textContent = pos.name;
+        positionSelect.appendChild(option);
+    });
+}
+
+function renderEmployeesTable() {
     const tbody = document.getElementById('employeesTableBody');
     if (!tbody) return;
 
-    let filteredEmployees = employees;
+    let filteredEmployees = [...employees];
 
-    // Apply role filter
     if (currentFilterRole !== 'all') {
-        filteredEmployees = filteredEmployees.filter(emp => emp.position === currentFilterRole);
+        filteredEmployees = filteredEmployees.filter(emp => emp.position_id == currentFilterRole);
     }
 
-    // Apply search
     if (searchTerm) {
         const term = searchTerm.toLowerCase();
-        filteredEmployees = filteredEmployees.filter(emp => 
-            emp.firstName.toLowerCase().includes(term) ||
-            emp.lastName.toLowerCase().includes(term) ||
-            emp.email.toLowerCase().includes(term) ||
-            emp.positionName.toLowerCase().includes(term)
+        filteredEmployees = filteredEmployees.filter(emp =>
+            emp.first_name?.toLowerCase().includes(term) ||
+            emp.last_name?.toLowerCase().includes(term) ||
+            emp.email?.toLowerCase().includes(term) ||
+            emp.position?.toLowerCase().includes(term)
         );
+    }
+
+    if (filteredEmployees.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 40px;">
+                    <div style="color: #888;">No employees found</div>
+                </td>
+            </tr>
+        `;
+        return;
     }
 
     tbody.innerHTML = filteredEmployees.map(emp => `
         <tr>
             <td>
                 <div class="employee-info">
-                    <div class="employee-avatar">${emp.firstName[0]}${emp.lastName[0]}</div>
+                    <div class="employee-avatar">${emp.first_name?.[0] || ''}${emp.last_name?.[0] || ''}</div>
                     <div>
-                        <div class="employee-name">${emp.firstName} ${emp.lastName}</div>
+                        <div class="employee-name">${emp.first_name} ${emp.last_name}</div>
                         <div class="employee-email">${emp.email}</div>
                     </div>
                 </div>
             </td>
-            <td><span class="position-badge">${emp.positionName}</span></td>
-            <td><span class="rate-value">$${emp.hourlyRate.toFixed(2)}</span></td>
+            <td><span class="position-badge">${emp.position || '—'}</span></td>
+            <td><span class="rate-value">$${emp.hourly_rate?.toFixed(2) || '0.00'}</span></td>
             <td class="workload-cell">
                 <div class="workload-bar-container">
                     <div class="workload-bar">
-                        <div class="workload-fill ${emp.workload > 90 ? 'high' : ''}" style="width: ${emp.workload}%"></div>
+                        <div class="workload-fill" style="width: ${emp.workload || 0}%"></div>
                     </div>
-                    <span class="workload-text">${emp.workload}%</span>
+                    <span class="workload-text">${emp.workload || 0}%</span>
                 </div>
             </td>
-            <td><span class="projects-count">${emp.projects}</span></td>
+            <td><span class="projects-count">${emp.projects || 0}</span></td>
             <td>
-                <span class="status-badge ${emp.isActive ? 'active' : 'inactive'}">
-                    ${emp.isActive ? 'Active' : 'Inactive'}
+                <span class="status-badge ${emp.is_active ? 'active' : 'inactive'}">
+                    ${emp.is_active ? 'Active' : 'Inactive'}
                 </span>
             </td>
             <td>
@@ -162,45 +163,39 @@ function loadEmployees() {
 
 function updateStats() {
     const total = employees.length;
-    const active = employees.filter(e => e.isActive).length;
+    const active = employees.filter(e => e.is_active).length;
     const inactive = total - active;
-    const avgWorkload = Math.round(employees.filter(e => e.isActive).reduce((sum, e) => sum + e.workload, 0) / active) || 0;
+    const avgWorkload = employees.filter(e => e.is_active).reduce((sum, e) => sum + (e.workload || 0), 0) / active || 0;
 
     document.getElementById('totalEmployees').textContent = total;
     document.getElementById('activeEmployees').textContent = active;
     document.getElementById('inactiveEmployees').textContent = inactive;
-    document.getElementById('avgWorkload').textContent = avgWorkload + '%';
+    document.getElementById('avgWorkload').textContent = Math.round(avgWorkload) + '%';
 }
 
+// ==================== ФИЛЬТРЫ ====================
+
 function initFilters() {
-    // Role filters
+    // Role filters (по position_id)
     document.querySelectorAll('.role-filter').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.role-filter').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentFilterRole = btn.dataset.role;
-            loadEmployees();
+            renderEmployeesTable();
         });
     });
 
-    // Search
     const searchInput = document.getElementById('searchEmployee');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             searchTerm = e.target.value;
-            loadEmployees();
-        });
-    }
-
-    // Filter button
-    const filterBtn = document.getElementById('filterBtn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            // Здесь можно открыть расширенный фильтр
-            showNotification('Advanced filters coming soon', 'info');
+            renderEmployeesTable();
         });
     }
 }
+
+// ==================== МОДАЛЬНОЕ ОКНО ====================
 
 function initModal() {
     const modal = document.getElementById('employeeModal');
@@ -213,9 +208,6 @@ function initModal() {
     const closeViewModalBtn = document.getElementById('closeViewModalBtn');
     const editFromViewBtn = document.getElementById('editFromViewBtn');
 
-    let editingId = null;
-
-    // Open create modal
     if (openBtn && modal) {
         openBtn.addEventListener('click', () => {
             editingId = null;
@@ -226,7 +218,6 @@ function initModal() {
         });
     }
 
-    // Close modal function
     function closeModal() {
         modal.classList.remove('active');
         viewModal.classList.remove('active');
@@ -239,7 +230,6 @@ function initModal() {
     if (closeViewBtn) closeViewBtn.addEventListener('click', closeModal);
     if (closeViewModalBtn) closeViewModalBtn.addEventListener('click', closeModal);
 
-    // Close on click outside
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
@@ -248,23 +238,18 @@ function initModal() {
         if (e.target === viewModal) closeModal();
     });
 
-    // Close on ESC
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
-        }
+        if (e.key === 'Escape') closeModal();
     });
 
-    // Save employee
     if (saveBtn) {
         saveBtn.addEventListener('click', () => {
             if (validateForm()) {
-                saveEmployee(editingId);
+                saveEmployee();
             }
         });
     }
 
-    // Edit from view modal
     if (editFromViewBtn) {
         editFromViewBtn.addEventListener('click', () => {
             if (editingId) {
@@ -276,39 +261,22 @@ function initModal() {
 }
 
 function resetForm() {
-    document.getElementById('firstName').value = '';
-    document.getElementById('lastName').value = '';
-    document.getElementById('email').value = '';
+    document.getElementById('userEmail').value = '';
     document.getElementById('position').value = '';
     document.getElementById('hourlyRate').value = '';
-    document.getElementById('login').value = '';
-    document.getElementById('password').value = '';
     document.getElementById('isActive').checked = true;
     document.getElementById('employeeError').textContent = '';
 }
 
 function validateForm() {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const email = document.getElementById('email').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
     const position = document.getElementById('position').value;
     const hourlyRate = document.getElementById('hourlyRate').value;
-    const login = document.getElementById('login').value.trim();
-    const password = document.getElementById('password').value;
     const error = document.getElementById('employeeError');
-
-    if (!firstName || firstName.length < 2) {
-        error.textContent = 'First name must be at least 2 characters';
-        return false;
-    }
-
-    if (!lastName || lastName.length < 2) {
-        error.textContent = 'Last name must be at least 2 characters';
-        return false;
-    }
+    const modalTitle = document.getElementById('modalTitle').textContent;
 
     if (!email || !isValidEmail(email)) {
-        error.textContent = 'Please enter a valid email';
+        error.textContent = 'Please enter a valid email of existing user';
         return false;
     }
 
@@ -322,17 +290,6 @@ function validateForm() {
         return false;
     }
 
-    if (!login || login.length < 3) {
-        error.textContent = 'Login must be at least 3 characters';
-        return false;
-    }
-
-    // Only validate password for new employees
-    if (!document.getElementById('modalTitle').textContent.includes('Edit') && (!password || password.length < 6)) {
-        error.textContent = 'Password must be at least 6 characters';
-        return false;
-    }
-
     return true;
 }
 
@@ -340,170 +297,225 @@ function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function saveEmployee(editingId) {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName = document.getElementById('lastName').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const position = document.getElementById('position').value;
-    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
-    const login = document.getElementById('login').value.trim();
-    const isActive = document.getElementById('isActive').checked;
+// ==================== СОЗДАНИЕ/РЕДАКТИРОВАНИЕ ====================
 
-    // Get position display name
-    const positionSelect = document.getElementById('position');
-    const positionName = positionSelect.options[positionSelect.selectedIndex]?.text || position;
+async function saveEmployee() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = '/auth/register.html';
+        return;
+    }
+
+    const email = document.getElementById('userEmail').value.trim();
+    const positionId = parseInt(document.getElementById('position').value);
+    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value);
+    const isActive = document.getElementById('isActive').checked;
+    const modalTitle = document.getElementById('modalTitle').textContent;
 
     const employeeData = {
-        id: editingId || Date.now(),
-        firstName,
-        lastName,
-        email,
-        position,
-        positionName,
-        hourlyRate,
-        login,
-        isActive,
-        workload: editingId ? employees.find(e => e.id === editingId)?.workload || 50 : 50,
-        projects: editingId ? employees.find(e => e.id === editingId)?.projects || 0 : 0
+        email: email,
+        position_id: positionId,
+        hourly_rate: hourlyRate,
+        is_active: isActive
     };
 
-    if (editingId) {
-        // Update existing
-        const index = employees.findIndex(e => e.id === editingId);
-        if (index !== -1) {
-            employees[index] = { ...employees[index], ...employeeData };
-        }
-        showNotification('Employee updated successfully', 'success');
-    } else {
-        // Create new
-        employees.push(employeeData);
-        showNotification('Employee added successfully', 'success');
-    }
+    try {
+        let url = 'http://localhost:8080/api/employees/create';
+        let method = 'POST';
 
-    loadEmployees();
-    updateStats();
-    
-    // Close modal
-    document.getElementById('employeeModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-    resetForm();
+        if (modalTitle.includes('Edit')) {
+            url = `http://localhost:8080/api/employees/${editingId}`;
+            method = 'PUT';
+        }
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(employeeData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to save employee');
+        }
+
+        showNotification(modalTitle.includes('Edit') ? 'Employee updated successfully' : 'Employee created successfully', 'success');
+        await loadEmployees();
+        document.getElementById('employeeModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        resetForm();
+
+    } catch (error) {
+        console.error('Error saving employee:', error);
+        document.getElementById('employeeError').textContent = error.message;
+        showNotification(error.message, 'error');
+    }
 }
 
-// Global functions for buttons
-window.viewEmployee = function(id) {
-    const employee = employees.find(e => e.id === id);
-    if (!employee) return;
+// ==================== ПРОСМОТР ====================
 
-    editingId = id;
+window.viewEmployee = async function(id) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-    // Update view modal
-    document.getElementById('viewFullName').textContent = `${employee.firstName} ${employee.lastName}`;
-    document.getElementById('viewPosition').textContent = employee.positionName;
-    document.getElementById('viewEmail').textContent = employee.email;
-    document.getElementById('viewLogin').textContent = employee.login;
-    document.getElementById('viewRate').textContent = `$${employee.hourlyRate.toFixed(2)}`;
-    document.getElementById('viewProjects').textContent = employee.projects;
-    document.getElementById('viewAvatar').textContent = `${employee.firstName[0]}${employee.lastName[0]}`;
-    
-    const statusElement = document.getElementById('viewStatus');
-    statusElement.textContent = employee.isActive ? 'Active' : 'Inactive';
-    statusElement.className = `profile-status ${employee.isActive ? 'active' : 'inactive'}`;
+    try {
+        const response = await fetch(`http://localhost:8080/api/employees/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-    // Load projects (sample data)
-    const projectsList = document.getElementById('viewProjectsList');
-    if (employee.projects > 0) {
-        projectsList.innerHTML = `
-            <div class="project-item">
-                <div>
-                    <div class="project-name">Website Redesign</div>
-                    <div class="project-role">${employee.positionName}</div>
-                </div>
-                <span class="project-hours">20h/week</span>
-            </div>
-            <div class="project-item">
-                <div>
-                    <div class="project-name">Mobile App Development</div>
-                    <div class="project-role">${employee.positionName}</div>
-                </div>
-                <span class="project-hours">15h/week</span>
-            </div>
-        `;
-    } else {
-        projectsList.innerHTML = '<p style="color: #888; text-align: center;">No active projects</p>';
+        if (!response.ok) throw new Error('Failed to load employee');
+
+        const employee = await response.json();
+        editingId = id;
+
+        document.getElementById('viewFullName').textContent = `${employee.first_name} ${employee.last_name}`;
+        document.getElementById('viewPosition').textContent = employee.position || '—';
+        document.getElementById('viewEmail').textContent = employee.email;
+        document.getElementById('viewRate').textContent = `$${employee.hourly_rate?.toFixed(2) || '0.00'}`;
+        document.getElementById('viewProjects').textContent = employee.projects || 0;
+        document.getElementById('viewAvatar').textContent = `${employee.first_name?.[0] || ''}${employee.last_name?.[0] || ''}`;
+
+        const statusElement = document.getElementById('viewStatus');
+        statusElement.textContent = employee.is_active ? 'Active' : 'Inactive';
+        statusElement.className = `profile-status ${employee.is_active ? 'active' : 'inactive'}`;
+
+        const projectsList = document.getElementById('viewProjectsList');
+        projectsList.innerHTML = employee.projects && employee.projects > 0
+            ? '<p style="color: #888; text-align: center;">Projects loaded from database</p>'
+            : '<p style="color: #888; text-align: center;">No active projects</p>';
+
+        lucide.createIcons();
+        document.getElementById('viewModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+    } catch (error) {
+        console.error('Error loading employee:', error);
+        showNotification('Failed to load employee details', 'error');
     }
+};
 
-    // Load activity (sample data)
-    const activityList = document.getElementById('viewActivity');
-    activityList.innerHTML = `
-        <div class="activity-item">
-            <div class="activity-icon"><i data-lucide="check-circle"></i></div>
-            <div class="activity-content">
-                <div class="activity-text">Completed task "Design review"</div>
-                <div class="activity-time">2 hours ago</div>
+// ==================== РЕДАКТИРОВАНИЕ ====================
+
+window.editEmployee = async function(id) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/employees/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load employee');
+
+        const employee = await response.json();
+        editingId = id;
+
+        document.getElementById('modalTitle').textContent = 'Edit Employee';
+        document.getElementById('userEmail').value = employee.email;
+        document.getElementById('userEmail').disabled = true; // Email нельзя менять
+        document.getElementById('position').value = employee.position_id || '';
+        document.getElementById('hourlyRate').value = employee.hourly_rate;
+        document.getElementById('isActive').checked = employee.is_active;
+        document.getElementById('employeeError').textContent = '';
+
+        document.getElementById('employeeModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+    } catch (error) {
+        console.error('Error loading employee for edit:', error);
+        showNotification('Failed to load employee data', 'error');
+    }
+};
+
+// ==================== УДАЛЕНИЕ ====================
+
+window.deleteEmployee = function(id) {
+    const confirmModal = document.createElement('div');
+    confirmModal.className = 'modal';
+    confirmModal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    confirmModal.innerHTML = `
+        <div style="background: linear-gradient(135deg, #0f1215, #1a1f23); padding: 30px; border-radius: 30px; width: 400px; border: 1px solid rgba(40,98,58,0.3);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <h2 style="color: white;">Confirm Deletion</h2>
+                <button id="closeConfirm" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">×</button>
             </div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-icon"><i data-lucide="clock"></i></div>
-            <div class="activity-content">
-                <div class="activity-text">Added timesheet for last week</div>
-                <div class="activity-time">1 day ago</div>
+            <div style="text-align: center; padding: 20px;">
+                <i data-lucide="alert-triangle" style="width: 48px; height: 48px; stroke: #ef4444; margin-bottom: 15px;"></i>
+                <p style="color: white;">Are you sure you want to delete this employee?</p>
+                <p style="color: #a0e0b0;">This action cannot be undone.</p>
             </div>
-        </div>
-        <div class="activity-item">
-            <div class="activity-icon"><i data-lucide="message-square"></i></div>
-            <div class="activity-content">
-                <div class="activity-text">Commented on task "API Integration"</div>
-                <div class="activity-time">2 days ago</div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button id="cancelDelete" style="padding: 10px 24px; border-radius: 40px; background: rgba(255,255,255,0.05); color: #a0a0a0; border: none; cursor: pointer;">Cancel</button>
+                <button id="confirmDelete" style="padding: 10px 24px; border-radius: 40px; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; cursor: pointer;">Delete</button>
             </div>
         </div>
     `;
 
+    document.body.appendChild(confirmModal);
+    document.body.style.overflow = 'hidden';
     lucide.createIcons();
-    document.getElementById('viewModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
+
+    document.getElementById('closeConfirm').onclick = () => { confirmModal.remove(); document.body.style.overflow = 'auto'; };
+    document.getElementById('cancelDelete').onclick = () => { confirmModal.remove(); document.body.style.overflow = 'auto'; };
+    document.getElementById('confirmDelete').onclick = async () => {
+        await confirmDeleteEmployee(id);
+        confirmModal.remove();
+        document.body.style.overflow = 'auto';
+    };
 };
 
-window.editEmployee = function(id) {
-    const employee = employees.find(e => e.id === id);
-    if (!employee) return;
+async function confirmDeleteEmployee(id) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-    editingId = id;
-    document.getElementById('modalTitle').textContent = 'Edit Employee';
-    
-    document.getElementById('firstName').value = employee.firstName;
-    document.getElementById('lastName').value = employee.lastName;
-    document.getElementById('email').value = employee.email;
-    document.getElementById('position').value = employee.position;
-    document.getElementById('hourlyRate').value = employee.hourlyRate;
-    document.getElementById('login').value = employee.login;
-    document.getElementById('password').value = ''; // Don't populate password
-    document.getElementById('isActive').checked = employee.isActive;
-    document.getElementById('employeeError').textContent = '';
+    try {
+        const response = await fetch(`http://localhost:8080/api/employees/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-    document.getElementById('employeeModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-};
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to delete employee');
+        }
 
-window.deleteEmployee = function(id) {
-    if (confirm('Are you sure you want to delete this employee?')) {
-        employees = employees.filter(e => e.id !== id);
-        loadEmployees();
-        updateStats();
         showNotification('Employee deleted successfully', 'success');
+        await loadEmployees();
+
+    } catch (error) {
+        console.error('Error deleting employee:', error);
+        showNotification(error.message, 'error');
     }
-};
+}
+
+// ==================== УВЕДОМЛЕНИЯ ====================
 
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = `notification notification--${type}`;
     notification.innerHTML = `
-        <i data-lucide="${type === 'success' ? 'check-circle' : 'info'}"></i>
+        <i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}"></i>
         <span>${message}</span>
     `;
-    
+
     document.body.appendChild(notification);
     lucide.createIcons();
-    
+
     setTimeout(() => notification.classList.add('show'), 10);
     setTimeout(() => {
         notification.classList.remove('show');
@@ -511,7 +523,6 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 
-// Add notification styles
 if (!document.querySelector('#notification-styles')) {
     const style = document.createElement('style');
     style.id = 'notification-styles';
@@ -532,29 +543,16 @@ if (!document.querySelector('#notification-styles')) {
             gap: 12px;
             transform: translateX(100%);
             opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             z-index: 1001;
             border: 1px solid rgba(40, 98, 58, 0.3);
         }
-        
-        .notification.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-        
-        .notification--success {
-            background: linear-gradient(135deg, #1a2a23, #1e3a2a);
-            border-left: 4px solid #22c55e;
-        }
-        
-        .notification i {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .notification--success i {
-            stroke: #22c55e;
-        }
+        .notification.show { transform: translateX(0); opacity: 1; }
+        .notification--success { background: linear-gradient(135deg, #1a2a23, #1e3a2a); border-left: 4px solid #22c55e; }
+        .notification--error { background: linear-gradient(135deg, #2a1a1a, #3a1e1e); border-left: 4px solid #ef4444; }
+        .notification i { width: 20px; height: 20px; }
+        .notification--success i { stroke: #22c55e; }
+        .notification--error i { stroke: #ef4444; }
     `;
     document.head.appendChild(style);
 }

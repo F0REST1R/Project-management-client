@@ -30,7 +30,7 @@
     font-size: 16px;
 }
 
-/* Create Task Button */
+/* Create Task Button - единый стиль для всех */
 .create-task-btn {
     padding: 12px 28px;
     background: linear-gradient(135deg, #28623A, #1e4a2c);
@@ -40,7 +40,7 @@
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -54,9 +54,55 @@
     box-shadow: 0 8px 25px rgba(40, 98, 58, 0.5);
 }
 
+.create-task-btn:active {
+    transform: translateY(0);
+}
+
 .create-task-btn i {
     width: 18px;
     height: 18px;
+}
+
+/* Специальные стили для кнопки в пустом состоянии */
+.empty-state .create-task-btn {
+    margin-top: 24px;
+}
+
+/* Projects link button */
+.projects-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+    width: fit-content;
+}
+
+.projects-link-btn:hover {
+    color: #a0e0b0;
+    transform: translateX(-2px);
+}
+
+.projects-link-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+.tasks-header__left {
+    display: flex;
+    flex-direction: column;
+}
+
+.tasks-actions {
+    display: flex;
+    gap: 12px;
 }
 
 /* Filters Section */
@@ -667,6 +713,47 @@
     box-shadow: 0 0 0 4px rgba(40, 98, 58, 0.15);
 }
 
+/* Modal Buttons */
+.modal-btn {
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    font-family: inherit;
+}
+
+.modal-btn--secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #a0a0a0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn--secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.modal-btn--primary {
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 98, 58, 0.3);
+}
+
+.modal-btn--primary:hover {
+    background: linear-gradient(135deg, #2f7a4a, #235d35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 98, 58, 0.5);
+}
+
+.modal-btn--secondary:active,
+.modal-btn--primary:active {
+    transform: translateY(0);
+}
+
 /* Task Detail View */
 .task-detail-header {
     display: flex;
@@ -893,4 +980,142 @@
     .form-row {
         grid-template-columns: 1fr;
     }
+}
+
+/* Additional styles for task status */
+.task-status {
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 80px;
+    text-align: center;
+}
+
+.status-todo {
+    background: rgba(107, 114, 128, 0.15);
+    color: #9ca3af;
+    border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.status-in-progress {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-review {
+    background: rgba(234, 179, 8, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.status-done {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-overdue {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.tasks-header__left {
+    display: flex;
+    flex-direction: column;
+}
+
+.back-to-projects {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(40, 98, 58, 0.15);
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    border-radius: 40px;
+    color: #a0e0b0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    width: fit-content;
+}
+
+.back-to-projects:hover {
+    background: rgba(40, 98, 58, 0.25);
+    transform: translateX(-3px);
+}
+
+.back-to-projects i {
+    width: 16px;
+    height: 16px;
+}
+
+.project-selector-wrapper {
+    margin-bottom: 12px;
+}
+
+.select-project-btn {
+    padding: 10px 20px;
+    background: rgba(40, 98, 58, 0.15);
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    border-radius: 40px;
+    color: #a0e0b0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.select-project-btn:hover {
+    background: rgba(40, 98, 58, 0.25);
+    transform: translateX(-3px);
+    border-color: #28623A;
+}
+
+.select-project-btn i {
+    width: 16px;
+    height: 16px;
+}
+
+.tasks-header__left {
+    display: flex;
+    flex-direction: column;
+}
+
+.projects-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    color: #666;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+    width: fit-content;
+}
+
+.projects-link-btn:hover {
+    color: #a0e0b0;
+    transform: translateX(-2px);
+}
+
+.projects-link-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+.tasks-header__left {
+    display: flex;
+    flex-direction: column;
 }

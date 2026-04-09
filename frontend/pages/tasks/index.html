@@ -23,10 +23,13 @@
                 <!-- Header с приветствием и ролью -->
                 <div class="tasks-header">
                     <div class="tasks-header__left">
+                        <button class="projects-link-btn" id="projectsLinkBtn">
+                            <i data-lucide="folder-kanban"></i>
+                            Projects
+                        </button>
                         <h1 class="tasks-title" id="pageTitle">My Tasks</h1>
                         <p class="tasks-subtitle" id="pageSubtitle">Manage your tasks and stay productive</p>
-                    </div>
-                    
+                    </div>                   
                     <div class="tasks-actions">
                         <button class="create-task-btn" id="createTaskBtn">
                             <i data-lucide="plus"></i>
@@ -46,13 +49,6 @@
                     </div>
 
                     <div class="filter-controls">
-                        <!-- Project selector (для клиентов и руководителей) -->
-                        <div class="project-selector" id="projectSelector" style="display: none;">
-                            <select id="projectFilter" class="project-select">
-                                <option value="all">All Projects</option>
-                            </select>
-                        </div>
-
                         <!-- Sort options -->
                         <div class="sort-selector">
                             <select id="sortBy" class="sort-select">
@@ -218,19 +214,20 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label>Status</label>
-                                <div class="dropdown" id="statusDropdown">
-                                    <div class="dropdown-selected">
-                                        To Do
-                                        <span class="dropdown-arrow">▼</span>
-                                    </div>
-                                    <div class="dropdown-menu">
-                                        <div class="dropdown-item" data-value="todo">To Do</div>
-                                        <div class="dropdown-item" data-value="in-progress">In Progress</div>
-                                        <div class="dropdown-item" data-value="review">Review</div>
-                                        <div class="dropdown-item" data-value="done">Done</div>
-                                    </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="taskStatus" class="form-select">
+                                        <option value="todo">To Do</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="review">Review</option>
+                                        <option value="done">Done</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <!-- Пустой div для сохранения сетки -->
                                 </div>
                             </div>
 

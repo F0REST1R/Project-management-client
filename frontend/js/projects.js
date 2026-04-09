@@ -16,10 +16,9 @@ function renderProjectsTable() {
     const tbody = document.querySelector(".projects-table tbody");
     if (!tbody) return;
 
-    // Используем projects, а не activeProjects
     if (projects.length === 0) {
         tbody.innerHTML = `
-             <tr>
+            <tr>
                 <td colspan="6" style="text-align: center; padding: 40px;">
                     <div style="color: #888; font-size: 16px;">
                         No projects yet. Click "Create Project" to get started.
@@ -91,11 +90,13 @@ function formatDate(dateString) {
     });
 }
 
-// View project function (global for onclick)
+// View project function - передаем ID проекта на страницу задач
 window.viewProject = function(projectId) {
-    // Store current project ID to view later
+    // Сохраняем ID проекта в localStorage
     localStorage.setItem("currentProjectId", projectId);
-    window.location.href = "../project/index.html";
+    // Также сохраняем флаг, что мы перешли из проекта
+    localStorage.setItem("fromProject", "true");
+    window.location.href = "../tasks/index.html";
 };
 
 function initModal() {
@@ -107,7 +108,6 @@ function initModal() {
     const clientSelect = document.getElementById("projectClient");
     const createClientBtn = document.getElementById("createClientFromProject");
 
-    // Open modal
     if (openBtn) {
         openBtn.addEventListener("click", () => {
             renderClientSelect();
@@ -118,7 +118,6 @@ function initModal() {
         });
     }
 
-    // Close modal
     function closeModal() {
         modal.style.display = "none";
         document.body.style.overflow = "auto";
@@ -129,21 +128,18 @@ function initModal() {
         closeBtn.addEventListener("click", closeModal);
     }
 
-    // Close on click outside
     modal.addEventListener("click", (e) => {
         if (e.target === modal) {
             closeModal();
         }
     });
 
-    // Close on ESC
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && modal.style.display === "flex") {
             closeModal();
         }
     });
 
-    // Open client modal from project modal
     if (createClientBtn) {
         createClientBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -154,7 +150,6 @@ function initModal() {
         });
     }
 
-    // Create project
     if (createBtn) {
         createBtn.addEventListener("click", () => {
             if (validateForm()) {
@@ -163,7 +158,6 @@ function initModal() {
         });
     }
 
-    // Listen for client created event
     window.addEventListener("clientCreated", () => {
         loadClients();
         const clients = JSON.parse(localStorage.getItem("clients")) || [];
@@ -240,11 +234,10 @@ async function createProject() {
     const clientId = document.getElementById("projectClient").value
     const managerId = document.getElementById("projectManager").value
     const startDate = document.getElementById("projectStart").value
-    const endDate = document.getElementById("projectEnd").value || null
+    let endDate = document.getElementById("projectEnd").value || null
     const status = statusValue
 
     if (endDate === "") endDate = null
-    // Если клиент не выбран, отправляем null
     const finalClientId = clientId === "" ? null : parseInt(clientId)
 
     try {
@@ -275,7 +268,6 @@ async function createProject() {
         document.getElementById("projectModal").style.display = "none"
         document.body.style.overflow = "auto"
         
-        // await loadProjects(false)
         await loadProjects()
         showArchive = false
     } catch (error) {
@@ -291,7 +283,6 @@ function resetForm() {
     document.getElementById("projectEnd").value = "";
     document.getElementById("projectError").innerText = "";
     
-    // Reset status dropdown
     const statusSelected = document.querySelector("#statusDropdown .dropdown-selected");
     if (statusSelected) {
         statusSelected.childNodes[0].nodeValue = "Initiation ";
@@ -307,7 +298,6 @@ function initDropdown() {
     const statusMenu = statusDropdown.querySelector(".dropdown-menu");
     const statusItems = statusDropdown.querySelectorAll(".dropdown-item");
 
-    // Toggle dropdown
     statusSelected.addEventListener("click", (e) => {
         e.stopPropagation();
         const isActive = statusDropdown.classList.contains("active");
@@ -321,7 +311,6 @@ function initDropdown() {
         }
     });
 
-    // Select item
     statusItems.forEach(item => {
         item.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -332,7 +321,6 @@ function initDropdown() {
         });
     });
 
-    // Close dropdown on click outside
     document.addEventListener("click", (e) => {
         if (!statusDropdown.contains(e.target)) {
             statusDropdown.classList.remove("active");
@@ -387,21 +375,18 @@ function renderClientSelect() {
     }
 }
 
-//Кнопка показа проектов, которые находятся в архиве
 function initArchive() {
     const archiveBtn = document.getElementById("viewArchive");
     if (!archiveBtn) return;
     
     archiveBtn.addEventListener("click", async () => {
-        showArchive = !showArchive;  // переключаем состояние
+        showArchive = !showArchive;
         
         if (showArchive) {
-            // Показываем только архивные проекты
             archiveBtn.textContent = "← Show Active";
             archiveBtn.classList.add("active");
             await loadArchivedProjects();
         } else {
-            // Показываем все проекты
             archiveBtn.textContent = "View Archive";
             archiveBtn.classList.remove("active");
             await loadProjects();
@@ -409,7 +394,6 @@ function initArchive() {
     });
 }
 
-// Функция загрузки только архивных проектов
 async function loadArchivedProjects() {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -437,7 +421,6 @@ async function loadArchivedProjects() {
     }
 }
 
-// Client modal functionality
 const clientModal = document.getElementById("clientModal");
 if (clientModal) {
     const closeClientModal = document.getElementById("closeClientModal");
@@ -455,14 +438,11 @@ if (clientModal) {
 
     if (createClientBtn) {
         createClientBtn.addEventListener("click", () => {
-            // Client creation is handled in clients.js
-            // Just close this modal
             clientModal.style.display = "none";
         });
     }
 }
 
-// Notification function
 function showNotification(message, type = "success") {
     const notification = document.createElement("div");
     notification.className = `notification notification--${type}`;
@@ -473,17 +453,14 @@ function showNotification(message, type = "success") {
     
     document.body.appendChild(notification);
     
-    // Create icon
     if (window.lucide) {
         lucide.createIcons();
     }
     
-    // Show notification
     setTimeout(() => {
         notification.classList.add("show");
     }, 10);
     
-    // Hide and remove
     setTimeout(() => {
         notification.classList.remove("show");
         setTimeout(() => {
@@ -492,7 +469,6 @@ function showNotification(message, type = "success") {
     }, 3000);
 }
 
-// Add notification styles if not present
 if (!document.querySelector("#notification-styles")) {
     const style = document.createElement("style");
     style.id = "notification-styles";
