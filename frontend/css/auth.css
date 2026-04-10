@@ -551,3 +551,335 @@ body {
         min-width: 80px;
     }
 }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-container {
+    background: linear-gradient(145deg, #0f1218, #0a0d12);
+    border-radius: 32px;
+    width: 520px;
+    max-width: 90%;
+    padding: 40px;
+    border: 1px solid rgba(40, 98, 58, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.modal-container.modal-small {
+    width: 440px;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, rgba(40, 98, 58, 0.15), rgba(34, 197, 94, 0.05));
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(40, 98, 58, 0.3);
+}
+
+.modal-icon svg {
+    stroke: #22c55e;
+}
+
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff, #a0e0b0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+
+.modal-subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 32px;
+}
+
+/* Modal Options */
+.modal-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-option-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(20, 20, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.modal-option-btn:hover {
+    background: rgba(40, 98, 58, 0.1);
+    border-color: rgba(40, 98, 58, 0.3);
+    transform: translateX(8px);
+}
+
+.option-icon {
+    font-size: 32px;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(40, 98, 58, 0.1);
+    border-radius: 16px;
+}
+
+.option-text {
+    flex: 1;
+}
+
+.option-title {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.option-desc {
+    display: block;
+    font-size: 12px;
+    color: #888;
+}
+
+.option-arrow {
+    font-size: 20px;
+    color: #22c55e;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal-option-btn:hover .option-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+}
+
+/* Invite Code Input */
+.invite-input-group {
+    margin-bottom: 28px;
+}
+
+.invite-code-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: #111;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 20px;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.invite-code-input:focus {
+    outline: none;
+    border-color: #28623A;
+    background: #181818;
+    box-shadow: 0 0 0 4px rgba(40, 98, 58, 0.15);
+}
+
+.invite-code-input::placeholder {
+    font-size: 14px;
+    letter-spacing: normal;
+    font-weight: normal;
+    color: #444;
+}
+
+.invite-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin-top: 12px;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.modal-btn-primary,
+.modal-btn-secondary {
+    padding: 14px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    font-family: inherit;
+}
+
+.modal-btn-primary {
+    background: linear-gradient(135deg, #28623A, #1e4a2c);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 98, 58, 0.3);
+    flex: 1;
+}
+
+.modal-btn-primary:hover {
+    background: linear-gradient(135deg, #2f7a4a, #235d35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 98, 58, 0.5);
+}
+
+.modal-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #a0a0a0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.modal-btn-primary:active,
+.modal-btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .modal-container {
+        padding: 28px 20px;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+    }
+    
+    .modal-option-btn {
+        padding: 16px 20px;
+    }
+    
+    .option-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+    }
+    
+    .invite-code-input {
+        font-size: 16px;
+        padding: 14px 16px;
+    }
+    
+    .modal-buttons {
+        flex-direction: column;
+    }
+    
+    .modal-btn-primary,
+    .modal-btn-secondary {
+        width: 100%;
+    }
+}
+
+/* Company Name Input */
+.company-name-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: #111;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 20px;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.company-name-input:focus {
+    outline: none;
+    border-color: #28623A;
+    background: #181818;
+    box-shadow: 0 0 0 4px rgba(40, 98, 58, 0.15);
+}
+
+.company-name-input::placeholder {
+    font-size: 14px;
+    font-weight: normal;
+    color: #444;
+}
+
+.company-name-input.error {
+    border-color: #ef4444;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.company-name-error {
+    animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

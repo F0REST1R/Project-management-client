@@ -4,12 +4,10 @@
 <head>
 
 	<meta charset="UTF-8">
-	<meta name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 	<title>Project Manager | Auth</title>
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
 	<link rel="stylesheet" href="../css/auth.css">
 
 </head>
@@ -166,6 +164,89 @@
 		</div>
 
 	</div>
+
+	<!-- MODAL: Company Selection for Manager -->
+	<div class="modal-overlay" id="managerModal">
+		<div class="modal-container">
+			<div class="modal-icon">
+				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+					<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+					<path d="M17 21v-4H7v4"/>
+					<path d="M9 7h6"/>
+				</svg>
+			</div>
+			<h2 class="modal-title">Welcome, Manager!</h2>
+			<p class="modal-subtitle">Set up your workspace to get started</p>
+			
+			<div class="modal-options">
+				<button class="modal-option-btn" id="createCompanyBtn">
+					<div class="option-icon">🏢</div>
+					<div class="option-text">
+						<span class="option-title">Create New Company</span>
+						<span class="option-desc">Start fresh and set up your team</span>
+					</div>
+					<div class="option-arrow">→</div>
+				</button>
+				
+				<button class="modal-option-btn" id="joinCompanyBtn">
+					<div class="option-icon">🔑</div>
+					<div class="option-text">
+						<span class="option-title">Join Existing Company</span>
+						<span class="option-desc">Enter invitation code to join</span>
+					</div>
+					<div class="option-arrow">→</div>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- MODAL: Invitation Code for Manager -->
+	<div class="modal-overlay" id="inviteCodeModal">
+		<div class="modal-container modal-small">
+			<div class="modal-icon">
+				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+					<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+					<polyline points="22,6 12,13 2,6"/>
+				</svg>
+			</div>
+			<h2 class="modal-title">Enter Invitation Code</h2>
+			<p class="modal-subtitle">Please enter the invitation code you received</p>
+			
+			<div class="invite-input-group">
+				<input type="text" class="invite-code-input" id="inviteCode" placeholder="XXXX-XXXX-XXXX" maxlength="14">
+				<div class="invite-hint">Code format: XXXX-XXXX-XXXX</div>
+			</div>
+			
+			<div class="modal-buttons">
+				<button class="modal-btn-secondary" id="backToOptionsBtn">Back</button>
+				<button class="modal-btn-primary" id="submitInviteBtn">Verify & Continue</button>
+			</div>
+		</div>
+	</div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="companyNameModal">
+        <div class="modal-container modal-small">
+            <div class="modal-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </div>
+            <h2 class="modal-title">Create Your Company</h2>
+            <p class="modal-subtitle">Give your workspace a name to get started</p>
+            
+            <div class="invite-input-group">
+                <input type="text" class="company-name-input" id="companyName" placeholder="e.g., Acme Corporation" maxlength="100">
+                <div class="invite-hint">This will be visible to all team members</div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn-secondary" id="backToManagerModalBtn">Back</button>
+                <button class="modal-btn-primary" id="createCompanySubmitBtn">Create Workspace →</button>
+            </div>
+        </div>
+    </div>
 
 	<script src="../js/auth.js"></script>
 
